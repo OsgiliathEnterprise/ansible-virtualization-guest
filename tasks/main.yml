@@ -1,2 +1,44 @@
 ---
 # tasks file for ansible-virtualization-guest
+
+- name: ansible-virtualization-guest | download vagrant-cloud isos
+  get_url:
+    url: "{{ box.url }}"
+    dest: "/tmp/{{ box.name }}.tar"
+    mode: '0740'
+  loop: "{{ virtualization_guest_boxes }}"
+  delegate_to: 127.0.0.1
+  loop_control:
+    loop_var: box
+
+- name: "ansible-virtualization-guest | copy {{ box.name }}.tar to remote"
+  copy:
+    src: "/tmp/{{ box.name }}.tar"
+    dest: "/tmp/{{ box.name }}.tar"
+  loop: "{{ virtualization_guest_boxes }}"
+  loop_control:
+    loop_var: box
+
+- name: "ansible-virtualization-guest | Extract {{ box.name }}.tar into libvirt images folder"
+  # unarchive:
+    # src: "/tmp/{{ box.name }}.tar"
+    # exclude:
+      # - Vagrantfile
+      # - metadata.json
+    # remote_src: true # TODO better to have it locally
+    # dest: "/var/lib/libvirt/images"
+    # extra_opts:
+      # - "-C {{ box.name }}.img"
+  shell:
+    cmd: "tar -xvf {{ box.name }}.tar box.img && mv box.img /var/lib/libvirt/images/{{ box.name }}.img" # noqa 303
+    creates: "/var/lib/libvirt/images/{{ box.name }}.img"
+    chdir: "/tmp"
+    warn: no
+  become: yes
+  loop: "{{ virtualization_guest_boxes }}"
+  loop_control:
+    loop_var: box
+
+- name: ansible-virtualization-guest | run vms
+  import_role:
+    name: stackhpc.libvirt-vm
