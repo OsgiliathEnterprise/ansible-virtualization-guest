@@ -1,10 +1,7 @@
 """Role testing files using testinfra."""
 
 
-def test_hosts_file(host):
-    """Validate /etc/hosts file."""
-    f = host.file("/etc/hosts")
-
-    assert f.exists
-    assert f.user == "root"
-    assert f.group == "root"
+def test_vm_has_started(host):
+    command = r"""sudo virsh list | egrep -c 'fedoraGuestVM\s*running'"""
+    cmd = host.run(command)
+    assert '1' in cmd.stdout

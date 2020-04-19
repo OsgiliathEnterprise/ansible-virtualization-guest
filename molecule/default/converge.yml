@@ -1,6 +1,44 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    virtualization_guest_boxes:
+      - name: fedora-31-cloud
+        url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-31-1.9.x86_64.vagrant-libvirt.box
+    users_group_list:
+      - name: libvirt
+    systemusers_user_list:
+      - name: libvirt
+        group: libvirt
+        groups: wheel
+    libvirt_host_pools:
+      - name: libvirt_vg
+        type: lvm2
+        source: libvirtpool
+        pvs:
+          - /dev/sdb1
+    libvirt_host_networks:
+      - name: ansible-virtualization-bridge
+        mode: bridge
+        bridge: virbr0
+    libvirt_vms:
+      - state: present
+        name: 'fedoraGuestVM'
+        memory_mb: 512
+        vcpus: 1
+        volumes:
+          - name: 'data1'
+            device: 'disk'
+            format: 'raw'
+            capacity: '100MB'
+            pool: 'libvirt_vg'
+          - name: 'fedora-31-cloud.img'
+            type: 'file'
+            device: 'cdrom'
+            format: 'raw'
+            target: 'hda'  # first device on ide bus
+        interfaces:
+          - network: 'ansible-virtualization-bridge'
   tasks:
     - name: "Include ansible-virtualization-guest"
       include_role:
