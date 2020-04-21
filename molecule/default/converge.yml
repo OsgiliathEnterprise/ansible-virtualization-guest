@@ -18,27 +18,30 @@
         pvs:
           - /dev/sdb1
     libvirt_host_networks:
-      - name: ansible-virtualization-bridge
-        mode: bridge
-        bridge: virbr0
+      - name: default
+        mode: nat
+        domain: default
+        bridge: vibr0
+        ip: 192.168.122.1
+        netmask: 255.255.255.0
+        dhcp_start: 192.168.122.100
+        dhcp_end: 192.168.122.200
     libvirt_vms:
       - state: present
         name: 'fedoraGuestVM'
         memory_mb: 512
         vcpus: 1
+#        console_log_enabled: true can be useful for true molecule tests: for example waiting for the 'localhost login' sentence
+
         volumes:
-          - name: 'data1'
-            device: 'disk'
-            format: 'raw'
-            capacity: '100MB'
-            pool: 'libvirt_vg'
           - name: 'fedora-31-cloud.img'
+            device: 'disk'
             type: 'file'
-            device: 'cdrom'
-            format: 'raw'
+            capacity: '3GB'
+            format: 'qcow2'
             target: 'hda'  # first device on ide bus
         interfaces:
-          - network: 'ansible-virtualization-bridge'
+          - network: 'default'
   tasks:
     - name: "Include ansible-virtualization-guest"
       include_role:
