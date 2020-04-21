@@ -44,7 +44,9 @@
     name: stackhpc.libvirt-vm
 
 - name: ansible-virtualization-guest | extract guest box mac address
-  shell: "virsh dumpxml {{ vm.name }} | xmllint --xpath '//interface[@type=\"network\"]/mac/@address' - | cut -d \\\" -f2"
+  shell: >
+    set -o pipefail && \
+    virsh dumpxml {{ vm.name }} | xmllint --xpath '//interface[@type="network"]/mac/@address' - | cut -d \" -f2
   become: true
   register: vmsmacs
   changed_when: false
@@ -57,13 +59,16 @@
     var: vmsmacs
 
 - name: ansible-virtualization-guest | extract lease
-  shell: "virsh net-dhcp-leases {{ mac.vm.interfaces[0].network }} | grep {{ mac.stdout}} | awk '{print $3,$5,$7}' | sed 's|/24||g'" # 1: mac, 2: IP, 3: DUID
+  shell: >
+    set -o pipefail && \
+    virsh net-dhcp-leases {{ mac.vm.interfaces[0].network }} | grep {{ mac.stdout }} | awk '{print $3,$5,$7}' | sed 's|/24||g'
+  # 1: mac, 2: IP, 3: DUID
   become: true
   register: leases
   changed_when: false
   loop: "{{ vmsmacs.results }}"
   until: leases.stdout | length > 0
-  retries: 5
+  retries: 25
   delay: 10
   loop_control:
     loop_var: mac
@@ -73,9 +78,12 @@
     var: leases
 
 - name: ansible-virtualization-guest | check permanent ip presence
-  shell: "virsh net-dumpxml default | xmllint --xpath '/network/ip/dhcp/host[@id=\"{{ lease.stdout.split(' ')[2] }}\"]' -"
+  shell: >
+    set -o pipefail && \
+    virsh net-dumpxml default | xmllint --xpath '/network/ip/dhcp/host[@id="{{ lease.stdout.split(' ')[2] }}"]' -
   become: true
   register: hostchecks
+  changed_when: false
   failed_when: false
   loop: "{{ leases.results }}"
   loop_control:
@@ -83,7 +91,11 @@
 
 - name: ansible-virtualization-guest | debug net update command
   debug:
-    msg: "virsh net-update {{ lease.mac.vm.interfaces[0].network }} add-last ip-dhcp-host '<host id=\"{{ lease.stdout.split(' ')[2] }}\" mac=\"{{ lease.stdout.split(' ')[0] }}\" ip=\"{{ lease.stdout.split(' ')[1] }}\"/>' --live --config --parent-index 0"
+    msg: >
+      set -o pipefail && \
+      virsh net-update {{ lease.mac.vm.interfaces[0].network }} add-last ip-dhcp-host \
+      '<host id="{{ lease.stdout.split(' ')[2] }}" mac="{{ lease.stdout.split(' ')[0] }}" ip="{{ lease.stdout.split(' ')[1] }}"/>' \
+      --live --config --parent-index 0
   loop: "{{ leases.results }}"
   loop_control:
     loop_var: lease
@@ -93,7 +105,11 @@
     var: hostchecks
 
 - name: ansible-virtualization-guest | configure permanent ip
-  shell: "virsh net-update {{ hostcheck.lease.mac.vm.interfaces[0].network }} add-last ip-dhcp-host '<host id=\"{{ hostcheck.lease.stdout.split(' ')[2] }}\" mac=\"{{ hostcheck.lease.stdout.split(' ')[0] }}\" ip=\"{{ hostcheck.lease.stdout.split(' ')[1] }}\"/>' --live --config --parent-index 0"
+  shell: >
+    set -o pipefail && \
+    virsh net-update {{ hostcheck.lease.mac.vm.interfaces[0].network }} add-last ip-dhcp-host \
+    '<host id="{{ hostcheck.lease.stdout.split(' ')[2] }}" mac="{{ hostcheck.lease.stdout.split(' ')[0] }}" ip="{{ hostcheck.lease.stdout.split(' ')[1] }}"/>' \
+    --live --config --parent-index 0
   become: true
   loop: "{{ hostchecks.results }}"
   loop_control:

@@ -8,6 +8,7 @@ def test_vm_has_started(host):
 
 
 def test_vm_ip_has_been_defined(host):
-    command = r"""sudo virsh net-dumpxml default  | xmllint --xpath '/network/ip/dhcp/host' - | grep -c 'ip='"""
+    command = r"""sudo virsh net-dumpxml default  | \
+    xmllint --xpath '/network/ip/dhcp/host' - | grep -c 'ip='"""
     cmd = host.run(command)
     assert '1' in cmd.stdout
