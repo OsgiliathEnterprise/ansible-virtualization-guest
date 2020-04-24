@@ -1,1 +1,53 @@
-../default/converge.yml
+---
+- name: Converge
+  hosts: all
+  vars:
+    manage_lvm: true
+    lvm_groups:
+      - vgname: non-persistent
+        disks:
+          - /dev/vdb
+        create: true
+        lvnames: []
+    virtualization_guest_boxes:
+      - name: fedora-31-cloud
+        url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-31-1.9.x86_64.vagrant-libvirt.box
+    users_group_list:
+      - name: libvirt
+    systemusers_user_list:
+      - name: libvirt
+        group: libvirt
+        groups: wheel
+    libvirt_host_pools:
+      - name: libvirt_vg
+        type: lvm2
+        source: non-persistent
+    libvirt_host_networks:
+      - name: default
+        mode: nat
+        domain: default
+        bridge: vibr0
+        ip: 192.168.122.1
+        netmask: 255.255.255.0
+        dhcp_start: 192.168.122.100
+        dhcp_end: 192.168.122.200
+    libvirt_vms:
+      - state: present
+        name: 'fedoraGuestVM'
+        memory_mb: 512
+        vcpus: 1
+#        console_log_enabled: true can be useful for true molecule tests: for example waiting for the 'localhost login' sentence
+
+        volumes:
+          - name: 'fedora-31-cloud.img'
+            device: 'disk'
+            type: 'file'
+            capacity: '3GB'
+            format: 'qcow2'
+            target: 'hda'  # first device on ide bus
+        interfaces:
+          - network: 'default'
+  tasks:
+    - name: "Include ansible-virtualization-guest"
+      include_role:
+        name: "ansible-virtualization-guest"

@@ -1,6 +1,11 @@
 Ansible virtualization Guest
 =========
 
+* Galaxy: [![Ansible Galaxy](https://img.shields.io/badge/galaxy-tcharl.ansible_virtualization_guest-660198.svg?style=flat)](https://galaxy.ansible.com/tcharl/ansible_virtualization_guest)
+* Lint & requirements: ![Molecule](https://github.com/OsgiliathEnterprise/ansible-virtualization-guest/workflows/Molecule/badge.svg)
+* Tests: [![Build Status](https://travis-ci.org/OsgiliathEnterprise/ansible-virtualization-guest.svg?branch=master)](https://travis-ci.org/OsgiliathEnterprise/ansible-virtualization-guest)
+* Chat: [![Join the chat at https://gitter.im/OsgiliathEnterprise/platform](https://badges.gitter.im/OsgiliathEnterprise/platform.svg)](https://gitter.im/OsgiliathEnterprise/platform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This role is a wrapper on top of The [StackHpc VM guest](https://github.com/stackhpc/ansible-role-libvirt-vm) role and permit to deploy a Virtual Machine on libvirt/kvm 
 
 Requirements
