@@ -1,6 +1,6 @@
 galaxy_info:
   author: Charlie Mordant
-  description: Installs and configures a vagrant cloud libvirt VM
+  description: Installs and configures a vagrant cloud VM with libvirt
   company: Osgiliath
 
   # If the issue tracker for your role is not on github, uncomment the
