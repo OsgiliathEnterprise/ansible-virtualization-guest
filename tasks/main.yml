@@ -57,6 +57,8 @@
 - name: ansible-virtualization-guest | debug mac address results
   debug:
     var: vmsmacs
+    verbosity: 3
+
 
 - name: ansible-virtualization-guest | extract lease
   shell: >
@@ -68,7 +70,7 @@
   changed_when: false
   loop: "{{ vmsmacs.results }}"
   until: leases.stdout | length > 0
-  retries: 25
+  retries: 40
   delay: 10
   loop_control:
     loop_var: mac
@@ -76,6 +78,7 @@
 - name: ansible-virtualization-guest | debug mac dhcp leases
   debug:
     var: leases
+    verbosity: 2
 
 - name: ansible-virtualization-guest | check permanent ip presence
   shell: >
@@ -99,6 +102,7 @@
   loop: "{{ leases.results }}"
   loop_control:
     loop_var: lease
+    verbosity: 2
 
 - name: ansible-virtualization-guest | debug hostcheck
   debug:
