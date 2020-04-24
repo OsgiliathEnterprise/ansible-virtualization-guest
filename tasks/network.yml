@@ -12,6 +12,7 @@
 - name: Debug netinfo
   debug:
     var: netinfo
+    verbosity: 1
 
 - name: ansible-virtualization-guest | configure permanent ip
   virt_net:

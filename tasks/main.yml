@@ -63,3 +63,12 @@
   loop: "{{ libvirt_vms }}"
   loop_control:
     loop_var: vm
+
+- name: ansible-virtualization-guest | check ifconfig
+  command: "ifconfig -a"
+  register: nicconfig
+  changed_when: false
+
+- name: ansible-virtualization-guest | debug nicconfig
+  debug:
+    var: nicconfig
