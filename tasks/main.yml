@@ -99,10 +99,10 @@
       virsh net-update {{ lease.mac.vm.interfaces[0].network }} add-last ip-dhcp-host \
       '<host id="{{ lease.stdout.split(' ')[2] }}" mac="{{ lease.stdout.split(' ')[0] }}" ip="{{ lease.stdout.split(' ')[1] }}"/>' \
       --live --config --parent-index 0
+    verbosity: 2
   loop: "{{ leases.results }}"
   loop_control:
     loop_var: lease
-    verbosity: 2
 
 - name: ansible-virtualization-guest | debug hostcheck
   debug:
