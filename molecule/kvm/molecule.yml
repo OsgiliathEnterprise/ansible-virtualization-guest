@@ -12,8 +12,8 @@ lint: yamllint . && flake8 && ansible-lint --exclude=meta
 platforms:
   - name: Fedora-Molecule-virtualization-Guest
     box: fedora/31-cloud-base
-    cpus: 3
-    memory: 3000
+    cpus: 4
+    memory: 3072
     provider_raw_config_args:
       - "storage :file, :size => '1G', :device => 'vdb'"
 provisioner:
