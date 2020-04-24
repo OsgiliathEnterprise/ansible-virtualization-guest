@@ -1,6 +1,7 @@
 ---
 
-- virt_net:
+- name: wait for leases to be available
+  virt_net:
     command: info
     name: "{{ nic.network }}"
   register: netinfo
