@@ -42,6 +42,7 @@
 - name: ansible-virtualization-guest | run vms
   import_role:
     name: stackhpc.libvirt-vm
+  become: true
 
 - name: Get current user.
   command: whoami
