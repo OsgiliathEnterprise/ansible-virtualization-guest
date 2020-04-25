@@ -14,6 +14,7 @@
     - name: debug vm log
       command: "cat {{ console_log_path }}"
       register: vmlog
+      become: true
       changed_when: false
     - name: display vm log
       debug:
