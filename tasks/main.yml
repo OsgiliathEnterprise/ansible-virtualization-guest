@@ -66,6 +66,7 @@
 - name: ansible-virtualization-guest | debug nicconfig
   debug:
     var: nicconfig
+    verbosity: 2
 
 - name: ansible-virtualization-guest | loop over vms
   include_tasks: vm.yml

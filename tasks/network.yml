@@ -1,13 +1,26 @@
 ---
 
-- name: wait for leases to be available
-  virt_net:
-    command: info
-    name: "{{ nic.network }}"
-  register: netinfo
-  retries: 40
-  delay: 10
-  until: netinfo.networks.default.dhcp_leases | length > 0
+- name: try to wait leases
+  block:
+  - name: wait for leases to be available
+    virt_net:
+      command: info
+      name: "{{ nic.network }}"
+    register: netinfo
+    retries: 40
+    delay: 10
+    until: netinfo.networks.default.dhcp_leases | length > 0
+  rescue:
+    - name: debug vm log
+      command: "cat {{ console_log_path }}"
+      register: vmlog
+      changed_when: false
+    - name: display vm log
+      debug:
+        cmd: "cat {{ console_log_path }}"
+    - name: force failure
+      command: "/bin/false"
+      changed_when: false
 
 - name: Debug netinfo
   debug:

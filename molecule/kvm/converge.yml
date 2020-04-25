@@ -35,7 +35,7 @@
         name: 'fedoraGuestVM'
         memory_mb: 1024
         vcpus: 1
-#        console_log_enabled: true can be useful for true CI tests: for example waiting for the 'localhost login' sentence
+        console_log_enabled: true # can be useful for true CI tests: for example waiting for the 'localhost login' sentence
 
         volumes:
           - name: 'fedora-31-cloud.img'
