@@ -33,9 +33,8 @@
     libvirt_vms:
       - state: present
         name: 'fedoraGuestVM'
-        memory_mb: 1024
-        vcpus: 1
-        console_log_enabled: true # can be useful for true CI tests: for example waiting for the 'localhost login' sentence
+        memory_mb: 2048
+        vcpus: 2
         volumes:
           - name: 'fedora-31-cloud.img'
             device: 'disk'
