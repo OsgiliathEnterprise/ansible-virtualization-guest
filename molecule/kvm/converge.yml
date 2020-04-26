@@ -30,15 +30,12 @@
         netmask: 255.255.255.0
         dhcp_start: 192.168.122.100
         dhcp_end: 192.168.122.200
-    console_log_path: "/tmp/fedoraGuestVM-console.log"
-    libvirt_vm_default_console_log_dir: "/tmp/"
     libvirt_vms:
       - state: present
         name: 'fedoraGuestVM'
         memory_mb: 1024
         vcpus: 1
         console_log_enabled: true # can be useful for true CI tests: for example waiting for the 'localhost login' sentence
-
         volumes:
           - name: 'fedora-31-cloud.img'
             device: 'disk'
