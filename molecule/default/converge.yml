@@ -25,7 +25,6 @@
     libvirt_host_networks:
       - name: default
         mode: nat
-        domain: default
         bridge: vibr0
         ip: 192.168.122.1
         netmask: 255.255.255.0
@@ -34,7 +33,7 @@
     libvirt_vms:
       - state: present
         name: 'fedoraGuestVM'
-        memory_mb: 512
+        memory_mb: 2048
         vcpus: 1
 #        console_log_enabled: true can be useful for true molecule tests: for example waiting for the 'localhost login' sentence
 
@@ -46,7 +45,7 @@
             format: 'qcow2'
             target: 'hda'  # first device on ide bus
         interfaces:
-          - network: 'default'
+          - network: default
   tasks:
     - name: "Include ansible-virtualization-guest"
       include_role:

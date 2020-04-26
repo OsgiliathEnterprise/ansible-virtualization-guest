@@ -1,2 +1,5 @@
 ---
 # defaults file for ansible-virtualization-guest
+
+# The default directory in which to store VM console logs, if a VM-specific log
+# file path is not given.

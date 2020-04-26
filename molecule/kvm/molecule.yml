@@ -13,7 +13,7 @@ platforms:
   - name: Fedora-Molecule-virtualization-Guest
     box: fedora/31-cloud-base
     cpus: 4
-    memory: 3072
+    memory: 4096
     provider_raw_config_args:
       - "storage :file, :size => '1G', :device => 'vdb'"
 provisioner:

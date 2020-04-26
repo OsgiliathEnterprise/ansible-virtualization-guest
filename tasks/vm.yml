@@ -1,0 +1,6 @@
+---
+- name: ansible-virtualization-guest | vm | loop over nics
+  include_tasks: network.yml
+  loop: "{{ vm.interfaces }}"
+  loop_control:
+    loop_var: nic
