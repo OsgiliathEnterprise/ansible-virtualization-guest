@@ -37,7 +37,7 @@
         port_forward_rules:
           - port_forward_rule: ssh-to-guest
             family: "{{ ansible_virtualization_guest_network_host_ipversion }}"
-            from_port: "{{ vm.ssh_port_on_host }}"
+            from_port: "{{ vm.ssh_port_on_host | default(2222) }}"
             protocol: tcp
             to_address: "{{ hostcheck.ipaddr }}"
             to_port: 22
