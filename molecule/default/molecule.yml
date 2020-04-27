@@ -15,6 +15,8 @@ platforms:
     box: fedora/31-cloud-base
     memory: 8192
     cpus: 4
+    instance_raw_config_args:
+      - "vm.network :forwarded_port, guest: 6752, host: 6752, protocol: 'tcp'"
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--nested-hw-virt', 'on']"
     provider_override_args:

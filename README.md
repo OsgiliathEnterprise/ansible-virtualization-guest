@@ -33,12 +33,14 @@ These boxes will be unpacked in `/var/lib/libvirt/images/{{ box.name }}.img` so 
         name: 'fedoraGuestVM'
         memory_mb: 512
         vcpus: 1
+        ssh_port_on_host: 6752 # this one is a new one: it let's you configure the ssh port on the host
         volumes:
           - name: 'fedora-31-cloud.img'
             type: 'file'
             device: 'cdrom'
             format: 'raw'
             target: 'hda'  # first device on ide bus
+
 ``` 
 
 Dependencies
