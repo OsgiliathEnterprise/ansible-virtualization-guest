@@ -59,16 +59,6 @@
   with_items:
     - "{{ whoami }}"
 
-- name: ansible-virtualization-guest | check ifconfig
-  command: "ifconfig -a"
-  register: nicconfig
-  changed_when: false
-
-- name: ansible-virtualization-guest | debug nicconfig
-  debug:
-    var: nicconfig
-    verbosity: 2
-
 - name: ansible-virtualization-guest | loop over vms
   include_tasks: vm.yml
   loop: "{{ libvirt_vms }}"

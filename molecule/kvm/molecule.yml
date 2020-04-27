@@ -14,6 +14,8 @@ platforms:
     box: fedora/31-cloud-base
     cpus: 4
     memory: 4096
+    instance_raw_config_args:
+      - "vm.network :forwarded_port, guest: 6752, host: 6752, protocol: 'tcp'"
     provider_raw_config_args:
       - "storage :file, :size => '1G', :device => 'vdb'"
 provisioner:

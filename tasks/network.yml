@@ -1,11 +1,11 @@
 ---
 
-- name: wait for leases to be available
+- name: ansible-virtualization-guest | network | wait for leases to be available
   virt_net:
     command: info
     name: "{{ nic.network }}"
   register: netinfo
-  retries: 70
+  retries: 70 # travis need a loooooooong setup
   delay: 10
   until: netinfo.networks.default.dhcp_leases | length > 0
 
@@ -14,7 +14,7 @@
     var: netinfo
     verbosity: 1
 
-- name: ansible-virtualization-guest | configure permanent ip
+- name: ansible-virtualization-guest | network | configure permanent ip
   virt_net:
     name: "{{ nic.network }}"
     command: modify
@@ -24,3 +24,23 @@
   loop_control:
     loop_var: hostcheck
   when: not netinfo.failed
+
+- name: ansible-virtualization-guest | network | set ssh redirection
+  include_role:
+    name: tcharl.ansible_routing
+  vars:
+    firewalld_zones:
+      - name: "{{ ansible_virtualization_guest_network_host_zone }}"
+        nics:
+          - "{{ ansible_virtualization_guest_network_host_nic }}"
+        masquerade: true
+        port_forward_rules:
+          - port_forward_rule: ssh-to-guest
+            family: "{{ ansible_virtualization_guest_network_host_ipversion }}"
+            from_port: "{{ vm.ssh_port_on_host | default(2222) }}"
+            protocol: tcp
+            to_address: "{{ hostcheck.ipaddr }}"
+            to_port: 22
+  loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck
