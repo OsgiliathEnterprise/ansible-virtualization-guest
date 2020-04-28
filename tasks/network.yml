@@ -44,3 +44,6 @@
   loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
+
+- name: ansible-virtualization-guest | loop over vms
+  include_tasks: guest-ssh.yml
