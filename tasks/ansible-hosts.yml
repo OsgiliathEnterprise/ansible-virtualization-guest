@@ -1,0 +1,23 @@
+---
+- name: ansible-virtualization-guest | vm | add vm to hosts
+  add_host:
+    name: '{{ hostcheck.clientid }}'
+    ansible_ssh_host: '{{ hostcheck.ipaddr }}'
+    ansible_ssh_port: '{{ vm.ssh_port_on_host | default(2222) }}'
+    groups:
+     "{{ [ 'vms' ] + vm.ansible_groups | default([ 'vms' ]) }}"
+  loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck
+
+- name: ansible-virtualization-guest | vm | debug vm groups
+  debug:
+    msg: >
+      The vm {{ hostcheck.clientid }} will be available
+      at host {{ hostcheck.ipaddr }}
+      and port {{ vm.ssh_port_on_host | default(2222) }}
+      and be added to the following ansible groups
+      {{ [ 'vms' ] + vm.ansible_groups | default([ 'vms' ]) }}
+  loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck

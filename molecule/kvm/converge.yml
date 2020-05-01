@@ -36,6 +36,9 @@
         memory_mb: 2048
         vcpus: 2
         ssh_port_on_host: 6752 # same as the one in molecule.yml
+        ansible_groups:
+          - directory
+          - openid
         volumes:
           - name: 'fedora-31-cloud.img'
             device: 'disk'

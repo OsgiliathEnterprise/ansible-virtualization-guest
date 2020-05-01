@@ -34,6 +34,9 @@ These boxes will be unpacked in `/var/lib/libvirt/images/{{ box.name }}.img` so 
         memory_mb: 512
         vcpus: 1
         ssh_port_on_host: 2222 # this one is an optional new one: it let's you configure the ssh port on the host or default to 2222, it will also override the authorized keys of the vagrant user with the one of your host's ansible deployment user
+        ansible_groups: # all created VMs will be added to the following ansible groups + the "vms" one for further deployment 
+          - directory
+          - openid
         volumes:
           - name: 'fedora-31-cloud.img'
             type: 'file'
