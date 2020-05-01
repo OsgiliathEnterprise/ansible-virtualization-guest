@@ -47,3 +47,6 @@
 
 - name: ansible-virtualization-guest | loop over vms
   include_tasks: guest-ssh.yml
+
+- name: ansible-virtualization-guest | loop over vms
+  include_tasks: ansible-hosts.yml
