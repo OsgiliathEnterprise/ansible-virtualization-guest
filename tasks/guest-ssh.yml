@@ -7,25 +7,31 @@
 - name: ansible-virtualization-guest | ssh | debug whoami
   debug:
     var: whoami
+    verbosity: 2
 
-- name: ansible-virtualization-guest | ssh | create ssh directory
+- name: ansible-virtualization-guest | ssh | ensure ssh directory is here
   file:
-    path: "/home/{{ whoami.stdout }}/.ssh/"
+    path: "/home/{{ whoami.stdout }}/.ssh"
     state: directory
-    recurse: yes
-    mode: '0750'
+    owner: "{{ whoami.stdout }}"
+    group: "{{ whoami.stdout }}"
+    mode: '0700'
 
 - name: ansible-virtualization-guest | ssh | download vagrant insecure key
   get_url:
     url: https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}"
+    owner: "{{ whoami.stdout }}"
+    group: "{{ whoami.stdout }}"
     mode: '0600'
 
 - name: ansible-virtualization-guest | ssh | download vagrant insecure public key
   get_url:
     url: https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub"
-    mode: '0640'
+    owner: "{{ whoami.stdout }}"
+    group: "{{ whoami.stdout }}"
+    mode: '0644'
 
 - name: ansible-virtualization-guest | ssh | execute ssh add
   shell: >
@@ -38,21 +44,9 @@
     path: "/home/{{ whoami.stdout }}/.ssh/authorizedOn{{ vm.name }}"
   register: ssh_configured
 
-- name: ansible-virtualization-guest | ssh | disable password login
-  shell: >
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
-    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}
-    "sudo sed -i 's/ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/g' /etc/ssh/sshd_config &&
-    sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config &&
-    sudo systemctl restart sshd.service"
-  loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
-  loop_control:
-    loop_var: hostcheck
-  when: not ssh_configured.stat.exists
-
 - name: ansible-virtualization-guest | ssh | ssh copy authorized key
   shell: >
-    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/vagrant/.ssh/id_rsa{{ vm.name }}
+    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
     /home/{{ whoami.stdout }}/.ssh/authorized_keys
     {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ ansible_virtualization_guest_vm_user }}/.ssh &&
     touch /home/{{ whoami.stdout }}/.ssh/authorizedOn{{ vm.name }}
