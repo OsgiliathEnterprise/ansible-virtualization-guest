@@ -26,10 +26,10 @@
       - name: default
         mode: nat
         bridge: vibr0
-        ip: 192.168.122.1
+        ip: 192.168.121.1
         netmask: 255.255.255.0
-        dhcp_start: 192.168.122.100
-        dhcp_end: 192.168.122.200
+        dhcp_start: 192.168.121.100
+        dhcp_end: 192.168.121.200
     libvirt_vms:
       - state: present
         name: 'fedoraGuestVM'
