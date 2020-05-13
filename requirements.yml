@@ -33,6 +33,10 @@ roles:
     source: https://galaxy.ansible.com
     path: ../community
 
+  - name: tcharl.ansible_role_libvirt_host
+    source: https://galaxy.ansible.com
+    path: ../community
+
   - name: stackhpc.libvirt-vm
     source: https://galaxy.ansible.com
     path: ../community
