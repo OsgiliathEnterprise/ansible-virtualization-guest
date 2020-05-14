@@ -4,26 +4,51 @@
   virt_net:
     command: info
     name: "{{ nic.network }}"
-  register: netinfo
+  register: fullnetinfo
   retries: 70 # travis need a loooooooong setup
   delay: 10
-  until: netinfo.networks.default.dhcp_leases | length > 0
+  until: fullnetinfo.networks.default.dhcp_leases | length > 0
 
-- name: Debug netinfo
+- name: ansible-virtualization-guest | network | Debug fullnetinfo
   debug:
-    var: netinfo
+    var: fullnetinfo
+    verbosity: 1
+
+- name: ansible-virtualization-guest | network | extract current vm xml
+  xml:
+    xmlstring: "{{ vmxml.get_xml }}"
+    xpath: "/domain/devices/interface[@type='network']/mac"  # /mac/@address
+    attribute: address
+    content: attribute
+  register: vmmacaddress
+
+- name: ansible-virtualization-guest | network | Debug vm mac address
+  debug:
+    var: vmmacaddress
+    verbosity: 2
+
+- name: ansible-virtualization-guest | network | extract current mac netinfo
+  vars:
+    query: "[?mac == '{{ vmmacaddress.matches.0.mac.address }}' ]"
+  debug:
+    msg: "{{ fullnetinfo.networks.default.dhcp_leases | json_query(query) }}"
+  register: currentvmnetinfo
+
+- name: ansible-virtualization-guest | network | Debug currentvmnetinfo
+  debug:
+    var: currentvmnetinfo
     verbosity: 1
 
 - name: ansible-virtualization-guest | network | configure permanent ip
   virt_net:
     name: "{{ nic.network }}"
     command: modify
-    xml: "<host mac='{{ hostcheck.mac }}' id='{{ hostcheck.clientid }}' ip='{{ hostcheck.ipaddr }}'/>"
+    xml: "<host mac='{{ hostcheck.mac }}' id='{{ hostcheck.clientid }}' name='{{ vm.name }}' ip='{{ hostcheck.ipaddr }}'/>"
   become: true
-  loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
-  when: not netinfo.failed
+  when: not currentvmnetinfo.failed
 
 - name: ansible-virtualization-guest | network | set ssh redirection
   include_role:
@@ -35,18 +60,18 @@
           - "{{ ansible_virtualization_guest_network_host_nic }}"
         masquerade: true
         port_forward_rules:
-          - port_forward_rule: ssh-to-guest
+          - port_forward_rule: "ssh-to-guest-{{ vm.name }}"
             family: "{{ ansible_virtualization_guest_network_host_ipversion }}"
             from_port: "{{ vm.ssh_port_on_host | default(2222) }}"
             protocol: tcp
             to_address: "{{ hostcheck.ipaddr }}"
             to_port: 22
-  loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
 
-- name: ansible-virtualization-guest | loop over vms
+- name: ansible-virtualization-guest | network | trigger ssh role
   include_tasks: guest-ssh.yml
 
-- name: ansible-virtualization-guest | loop over vms
+- name: ansible-virtualization-guest | network | trigger ansible hosts role
   include_tasks: ansible-hosts.yml

@@ -8,7 +8,6 @@
         disks:
           - /dev/sdb1
         create: true
-        lvnames: []
     virtualization_guest_boxes:
       - name: fedora-31-cloud
         url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-31-1.9.x86_64.vagrant-libvirt.box

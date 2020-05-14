@@ -1,21 +1,4 @@
 ---
-- name: ansible-virtualization-guest | ssh | test whoami
-  command: "whoami"
-  register: whoami
-  changed_when: false
-
-- name: ansible-virtualization-guest | ssh | debug whoami
-  debug:
-    var: whoami
-    verbosity: 2
-
-- name: ansible-virtualization-guest | ssh | ensure ssh directory is here
-  file:
-    path: "/home/{{ whoami.stdout }}/.ssh"
-    state: directory
-    owner: "{{ whoami.stdout }}"
-    group: "{{ whoami.stdout }}"
-    mode: '0700'
 
 - name: ansible-virtualization-guest | ssh | download vagrant insecure key
   get_url:
@@ -50,7 +33,7 @@
     /home/{{ whoami.stdout }}/.ssh/authorized_keys
     {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ ansible_virtualization_guest_vm_user }}/.ssh &&
     touch /home/{{ whoami.stdout }}/.ssh/authorizedOn{{ vm.name }}
-  loop: "{{ netinfo.networks.default.dhcp_leases }}" # default here should be the referenced interface
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
-  when: not netinfo.failed and not ssh_configured.stat.exists
+  when: not ssh_configured.stat.exists

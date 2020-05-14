@@ -38,7 +38,7 @@ These boxes will be unpacked in `/var/lib/libvirt/images/{{ box.name }}.img` so 
           - directory
           - openid
         volumes:
-          - name: 'fedora-31-cloud.img'
+          - name: 'fedora-31-cloud.img' # shall have the same name as the 'name' variable of the box, suffixed by img
             type: 'file'
             device: 'cdrom'
             format: 'raw'
