@@ -6,7 +6,7 @@
     ansible_ssh_port: '{{ vm.ssh_port_on_host | default(2222) }}'
     ansible_ssh_user: '{{ ansible_virtualization_guest_vm_user }}'
     groups:
-     "{{ [ 'vms' ] + vm.ansible_groups | default([ 'vms' ]) }}"
+     "{{ [ 'vms' ] + vm.ansible_groups | list }}"
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
@@ -18,7 +18,7 @@
       at host {{ hostcheck.ipaddr }}
       and port {{ vm.ssh_port_on_host | default(2222) }}
       and be added to the following ansible groups
-      {{ [ 'vms' ] + vm.ansible_groups | default([ 'vms' ]) }}
+      {{ [ 'vms' ] + vm.ansible_groups | list }}
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
