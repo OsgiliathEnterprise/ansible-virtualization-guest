@@ -1,13 +1,19 @@
 ---
+- name: ansible-virtualization-guest | vm | get current VM host
+  debug:
+    var: ansible_default_ipv4.address
+    verbosity: 3
+
 - name: ansible-virtualization-guest | vm | add vm to hosts
   add_host:
     name: '{{ hostcheck.clientid }}'
-    ansible_ssh_host: '{{ hostcheck.ipaddr }}'
+    ansible_ssh_host: '{{ ansible_default_ipv4.address }}'
     ansible_ssh_port: '{{ vm.ssh_port_on_host | default(2222) }}'
     ansible_ssh_user: '{{ ansible_virtualization_guest_vm_user }}'
     groups:
      "{{ [ 'vms' ] + vm.ansible_groups | list }}"
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  changed_when: false
   loop_control:
     loop_var: hostcheck
 
@@ -15,7 +21,7 @@
   debug:
     msg: >
       The vm {{ hostcheck.clientid }} will be available
-      at host {{ hostcheck.ipaddr }}
+      at host {{ ansible_default_ipv4.address }}
       and port {{ vm.ssh_port_on_host | default(2222) }}
       and be added to the following ansible groups
       {{ [ 'vms' ] + vm.ansible_groups | list }}
