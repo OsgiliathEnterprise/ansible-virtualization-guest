@@ -2,40 +2,40 @@
 import socket
 
 
-def test_vm1_has_started(host):
+def test_vm_has_started_node(host):
     command = r"""sudo virsh list | egrep -c 'fedoraKubeNodeVM\s*running'"""
     cmd = host.run(command)
     assert '1' in cmd.stdout
 
 
-def test_vagrant_ssh_private_key_is_downloaded(host):
+def test_vagrant_ssh_private_key_is_downloaded_node(host):
     command = """stat ~/.ssh/id_rsafedoraKubeNodeVM  | \
     grep -c 'File'"""
     cmd = host.run(command)
     assert '1' in cmd.stdout
 
 
-def test_vagrant_ssh_public_key_is_downloaded(host):
+def test_vagrant_ssh_public_key_is_downloaded_node(host):
     command = """stat ~/.ssh/id_rsafedoraKubeNodeVM.pub  | \
     grep -c 'File'"""
     cmd = host.run(command)
     assert '1' in cmd.stdout
 
 
-def test_vm2_has_started(host):
+def test_vm_has_started_master(host):
     command = r"""sudo virsh list | egrep -c 'fedoraKubeMasterVM\s*running'"""
     cmd = host.run(command)
     assert '1' in cmd.stdout
 
 
-def test_vagrant_ssh_private_key_is_downloaded(host):
+def test_vagrant_ssh_private_key_is_downloaded_master(host):
     command = """stat ~/.ssh/id_rsafedoraKubeMasterVM  | \
     grep -c 'File'"""
     cmd = host.run(command)
     assert '1' in cmd.stdout
 
 
-def test_vagrant_ssh_public_key_is_downloaded(host):
+def test_vagrant_ssh_public_key_is_downloaded_for_master(host):
     command = """stat ~/.ssh/id_rsafedoraKubeMasterVM.pub  | \
     grep -c 'File'"""
     cmd = host.run(command)
