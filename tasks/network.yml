@@ -69,10 +69,10 @@
         enabled_services:
           - service: "{{ ansible_virtualization_guest_service_name }}"
           - service: "{{ ansible_virtualization_guest_service_name_tls }}"
-
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
+
 
 - name: ansible-virtualization-guest | network | check default nic forwarding is enabled
   shell: >
@@ -94,6 +94,7 @@
     - forwardingenabled is success
     - forwardingenabled.rc == 0
     - forwardingenabled.stdout == 1
+  notify: ansible-routing | handler | reload-firewall
 
 - name: ansible-virtualization-guest | network | permanently allow traffic forwarding on host nic
   template:
