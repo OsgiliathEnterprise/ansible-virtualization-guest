@@ -68,14 +68,32 @@
             to_port: 22
         enabled_services:
           - service: "{{ ansible_virtualization_guest_service_name }}"
+          - service: "{{ ansible_virtualization_guest_service_name_tls }}"
 
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
 
+- name: ansible-virtualization-guest | network | check default nic forwarding is enabled
+  shell: >
+    set -o pipefail &&
+    sysctl net.ipv4.conf.{{ ansible_default_ipv4.interface }}.forwarding | cut -d " " -f 3
+  register: forwardingenabled
+  become: true
+  changed_when: false
+
+- name: ansible-virtualization-guest | network | debug forwardingenabled variable
+  debug:
+    var: forwardingenabled
+    verbosity: 1
+
 - name: ansible-virtualization-guest | network | allow traffic forwarding on host nic
   command: "sysctl -w net.ipv4.conf.{{ ansible_default_ipv4.interface }}.forwarding=1"
   become: true
+  when:
+    - forwardingenabled is success
+    - forwardingenabled.rc == 0
+    - forwardingenabled.stdout == 1
 
 - name: ansible-virtualization-guest | network | permanently allow traffic forwarding on host nic
   template:
