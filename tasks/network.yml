@@ -66,9 +66,25 @@
             protocol: tcp
             to_address: "{{ hostcheck.ipaddr }}"
             to_port: 22
+        enabled_services:
+          - service: "{{ ansible_virtualization_guest_service_name }}"
+
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
+
+- name: ansible-virtualization-guest | network | allow traffic forwarding on host nic
+  command: "sysctl -w net.ipv4.conf.{{ ansible_default_ipv4.interface }}.forwarding=1"
+  become: true
+
+- name: ansible-virtualization-guest | network | permanently allow traffic forwarding on host nic
+  template:
+    src: sysctl_d_50_default.conf.j2
+    dest: "{{ ansible_sysctl_config_path }}/50-default.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
 
 - name: ansible-virtualization-guest | network | trigger ssh role
   include_tasks: guest-ssh.yml

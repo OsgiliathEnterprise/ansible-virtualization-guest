@@ -11,7 +11,7 @@
     ansible_port: "{{ vm.ssh_port_on_host | default(2222) }}"
     ansible_user: "{{ ansible_virtualization_guest_vm_user }}"
     ansible_ssh_private_key_file: "{{ ansible_ssh_private_key_file }}"
-    # ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
     groups:
      "{{ [ 'vms' ] + vm.ansible_groups | list }}"
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface

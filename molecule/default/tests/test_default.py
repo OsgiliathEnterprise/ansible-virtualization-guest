@@ -42,7 +42,7 @@ def test_vagrant_ssh_public_key_is_downloaded(host):
 
 
 def test_shell_login_to_vm_is_disabled(host):
-    retreiveipcommand = r""" sudo virsh net-dumpxml default | \
+    retreiveipcommand = r"""sudo virsh net-dumpxml default | \
     xmllint --xpath '/network/ip/dhcp/host/@ip' - | \
     sed 's/^[^"]*"\([^"]*\)".*/\1/'"""
     ip = host.run(retreiveipcommand)
@@ -53,3 +53,19 @@ def test_shell_login_to_vm_is_disabled(host):
     print('------')
     print(cmd.stderr)
     assert 'Permission denied' in cmd.stderr
+
+
+def test_ip_forwarding_is_enabled(host):
+    command = r"""
+    sudo sysctl net.ipv4.conf.eth0.forwarding | \
+    cut -d " " -f 3"""
+    cmd = host.run(command)
+    assert '1' in cmd.stdout
+
+
+def test_service_is_enabled(host):
+    command = r"""
+     sudo firewall-cmd --list-services --zone=public | \
+     egrep -c '\sssh'"""
+    cmd = host.run(command)
+    assert '1' in cmd.stdout
