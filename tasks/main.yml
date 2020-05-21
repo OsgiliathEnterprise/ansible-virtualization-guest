@@ -66,12 +66,12 @@
   become: false
   register: whoami
 
-- name: ansible-virtualization-guest | ssh | debug whoami
+- name: ansible-virtualization-guest | debug whoami
   debug:
     var: whoami
     verbosity: 2
 
-- name: ansible-virtualization-guest | ssh | ensure ssh directory is here
+- name: ansible-virtualization-guest | ensure ssh directory is here
   file:
     path: "/home/{{ whoami.stdout }}/.ssh"
     state: directory
@@ -79,7 +79,7 @@
     group: "{{ whoami.stdout }}"
     mode: '0700'
 
-- name: Add libvirt group to current user
+- name: ansible-virtualization-guest | Add libvirt group to current user
   user:
     name: "{{ item.stdout }}"
     groups: libvirt

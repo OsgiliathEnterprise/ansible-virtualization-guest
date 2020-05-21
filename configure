@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-ansible-galaxy install -r requirements.yml --roles-p ../community
+molecule dependency
 
 pip3 install jmespath

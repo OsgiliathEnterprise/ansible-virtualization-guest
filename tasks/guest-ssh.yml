@@ -2,7 +2,7 @@
 
 - name: ansible-virtualization-guest | ssh | download vagrant insecure key
   get_url:
-    url: https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant
+    url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}"
     owner: "{{ whoami.stdout }}"
     group: "{{ whoami.stdout }}"
@@ -10,7 +10,7 @@
 
 - name: ansible-virtualization-guest | ssh | download vagrant insecure public key
   get_url:
-    url: https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub
+    url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}.pub"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub"
     owner: "{{ whoami.stdout }}"
     group: "{{ whoami.stdout }}"
