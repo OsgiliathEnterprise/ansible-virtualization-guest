@@ -56,8 +56,6 @@
   vars:
     firewalld_zones:
       - name: "{{ ansible_virtualization_guest_network_host_zone }}"
-        nics:
-          - "{{ ansible_virtualization_guest_network_host_nic }}"
         masquerade: true
         port_forward_rules:
           - port_forward_rule: "ssh-to-guest-{{ vm.name }}"
