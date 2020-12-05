@@ -8,8 +8,10 @@ python:
 
 before_install:
   - |
-    sudo apt -y install bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils ruby-dev
-
+    sudo apt -y install build-dep vagrant ruby-libvirt
+    sudo apt -y install qemu libvirt-daemon-system libvirt-clients ebtables dnsmasq-base
+    sudo apt -y install libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
+    sudo apt -y install bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils
   - |
     wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
     sudo apt -y install ./vagrant_2.2.14_x86_64.deb
