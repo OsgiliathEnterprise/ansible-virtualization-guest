@@ -8,7 +8,6 @@ driver:
   name: vagrant
   provider:
     name: virtualbox
-
 lint: yamllint . && flake8 && ansible-lint --exclude=meta
 platforms:
   - name: Fedora-Molecule-Virtualization-Guest
