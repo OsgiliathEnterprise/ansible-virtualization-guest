@@ -13,6 +13,7 @@ before_install:
     sudo apt -y install libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
     sudo apt -y install bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils
   - |
+    export CONFIGURE_ARGS="with-libvirt-include=/usr/include/libvirt with-libvirt-lib=/usr/lib64"
     wget https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
     sudo apt -y install ./vagrant_2.2.14_x86_64.deb
     sudo vagrant plugin install vagrant-libvirt
