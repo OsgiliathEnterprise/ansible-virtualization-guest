@@ -27,10 +27,10 @@
         group: libvirt
         groups: wheel
     virtualization_guest_boxes:
-      - name: fedora-31-cloud-master
-        url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-31-1.9.x86_64.vagrant-libvirt.box
-      - name: fedora-31-cloud-node
-        url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-31-1.9.x86_64.vagrant-libvirt.box
+      - name: fedora-33-cloud-master
+        url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
+      - name: fedora-33-cloud-node
+        url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
     libvirt_vms:
       - state: present
         name: 'fedoraKubeMasterVM'
@@ -40,7 +40,7 @@
         ansible_groups:
           - kube_master
         volumes:
-          - name: 'fedora-31-cloud-master.img'
+          - name: 'fedora-33-cloud-master.img'
             device: 'disk'
             type: 'file'
             capacity: '3GB'
@@ -56,7 +56,7 @@
         ansible_groups:
           - kube_node
         volumes:
-          - name: 'fedora-31-cloud-node.img'
+          - name: 'fedora-33-cloud-node.img'
             device: 'disk'
             type: 'file'
             capacity: '3GB'

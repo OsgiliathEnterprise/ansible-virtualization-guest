@@ -12,7 +12,7 @@ driver:
 lint: yamllint . && flake8 && ansible-lint --exclude=meta
 platforms:
   - name: Fedora-Molecule-Virtualization-Guest
-    box: fedora/31-cloud-base
+    box: fedora/33-cloud-base
     memory: 8192
     cpus: 4
     instance_raw_config_args:
