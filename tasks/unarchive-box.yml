@@ -1,4 +1,9 @@
 ---
+- name: ansible-virtualization-guest | unarchive-box | Check for vagrantbox files existance
+  stat:
+    path: "/var/lib/libvirt/images/{{ box.name }}.img"
+  register: vagrantboxexists
+  become: true
 
 - name: "ansible-virtualization-guest | unarchive-box | Extract {{ box.name }}.tar into libvirt images folder"
   unarchive:
@@ -9,12 +14,7 @@
     dest: "{{ isosTempRemoteDirectory.path }}"
     remote_src: yes
     creates: "{{ isosTempRemoteDirectory.path }}/box.img"
-
-- name: ansible-virtualization-guest | unarchive-box | Check for vagrantbox files existance
-  stat:
-    path: "/var/lib/libvirt/images/{{ box.name }}.img"
-  register: vagrantboxexists
-  become: true
+  when: not vagrantboxexists.stat.exists
 
 - name: ansible-virtualization-guest | unarchive-box | Copy vagrantbox file if it does not exist
   copy:
