@@ -11,9 +11,11 @@ driver:
 lint: yamllint . && flake8 && ansible-lint --exclude=meta
 platforms:
   - name: Fedora-Molecule-virtualization-Guest
-    box: fedora/31-cloud-base
-    cpus: 4
-    memory: 4096
+    box: fedora/33-cloud-base
+    provider_options:
+      driver: '"kvm"'
+      cpus: 4
+      memory: 4096
     instance_raw_config_args:
       - "vm.network :forwarded_port, guest: 6752, host: 6752, protocol: 'tcp'"
     provider_raw_config_args:

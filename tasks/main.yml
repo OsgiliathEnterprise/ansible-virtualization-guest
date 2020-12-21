@@ -1,25 +1,6 @@
 ---
 # tasks file for ansible-virtualization-guest
 
-- name: ansible-virtualization-guest | create local temporary directory
-  tempfile:
-    state: directory
-    suffix: isos
-  delegate_to: 127.0.0.1
-  changed_when: false
-  register: isosTempLocalDirectory
-
-- name: ansible-virtualization-guest | download vagrant-cloud isos
-  get_url:
-    url: "{{ box.url }}"
-    dest: "{{ isosTempLocalDirectory.path }}/{{ box.name }}.tar"
-    mode: '0740'
-  loop: "{{ virtualization_guest_boxes }}"
-  changed_when: false
-  delegate_to: 127.0.0.1
-  loop_control:
-    loop_var: box
-
 - name: ansible-virtualization-guest | create remote temporary directory
   changed_when: false
   tempfile:
@@ -27,30 +8,8 @@
     suffix: isos
   register: isosTempRemoteDirectory
 
-- name: "ansible-virtualization-guest | copy {{ box.name }}.tar to remote"
-  changed_when: false
-  copy:
-    src: "{{ isosTempLocalDirectory.path }}/{{ box.name }}.tar"
-    dest: "{{ isosTempRemoteDirectory.path }}/{{ box.name }}.tar"
-  loop: "{{ virtualization_guest_boxes }}"
-  loop_control:
-    loop_var: box
-
 - name: "ansible-virtualization-guest | Extract {{ box.name }}.tar into libvirt images folder"
-  # unarchive: TODO can replace these three previous tasks, but do not figure out why it does not supporter
-    # src: "/tmp/{{ box.name }}.tar"
-    # exclude:
-      # - Vagrantfile
-      # - metadata.json
-    # dest: "/var/lib/libvirt/images"
-    # extra_opts:
-      # - "-C {{ box.name }}.img"
-  shell:
-    cmd: "tar -xvf {{ box.name }}.tar box.img && mv box.img /var/lib/libvirt/images/{{ box.name }}.img" # noqa 303
-    creates: "/var/lib/libvirt/images/{{ box.name }}.img"
-    chdir: "{{ isosTempRemoteDirectory.path }}"
-    warn: no
-  become: yes
+  include_tasks: unarchive-box.yml
   loop: "{{ virtualization_guest_boxes }}"
   loop_control:
     loop_var: box

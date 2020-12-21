@@ -10,8 +10,8 @@
         create: true
         lvnames: []
     virtualization_guest_boxes:
-      - name: fedora-31-cloud
-        url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-31-1.9.x86_64.vagrant-libvirt.box
+      - name: fedora-33-cloud
+        url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
     users_group_list:
       - name: libvirt
     systemusers_user_list:
@@ -40,7 +40,7 @@
           - directory
           - openid
         volumes:
-          - name: 'fedora-31-cloud.img'
+          - name: 'fedora-33-cloud.img'
             device: 'disk'
             type: 'file'
             capacity: '3GB'

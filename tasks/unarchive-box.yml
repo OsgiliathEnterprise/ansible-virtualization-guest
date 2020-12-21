@@ -1,0 +1,33 @@
+---
+- name: ansible-virtualization-guest | unarchive-box | Check for vagrantbox files existance
+  stat:
+    path: "/var/lib/libvirt/images/{{ box.name }}.img"
+  register: vagrantboxexists
+  become: true
+
+- name: "ansible-virtualization-guest | unarchive-box | Extract {{ box.name }}.tar into libvirt images folder"
+  unarchive:
+    src: "{{ box.url }}"
+    exclude:
+      - Vagrantfile
+      - metadata.json
+    dest: "{{ isosTempRemoteDirectory.path }}"
+    remote_src: yes
+    creates: "{{ isosTempRemoteDirectory.path }}/box.img"
+  when: not vagrantboxexists.stat.exists
+
+- name: ansible-virtualization-guest | unarchive-box | Copy vagrantbox file if it does not exist
+  copy:
+    src: "{{ isosTempRemoteDirectory.path }}/box.img"
+    dest: "/var/lib/libvirt/images/{{ box.name }}.img"
+    remote_src: yes
+    mode: 0640
+  when: not vagrantboxexists.stat.exists
+  become: true
+
+- name: ansible-virtualization-guest | unarchive-box |Remove vagrantbox file
+  file:
+    path: "{{ isosTempRemoteDirectory.path }}/box.img"
+    state: absent
+  when: not vagrantboxexists.stat.exists
+  become: true
