@@ -1,6 +1,9 @@
 ---
 # tasks file for ansible-virtualization-guest
 
+- name: ansible-virtualization-guest | install prerequisite
+  include_tasks: prereq.yml
+
 - name: ansible-virtualization-guest | create remote temporary directory
   changed_when: false
   tempfile:

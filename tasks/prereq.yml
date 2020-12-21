@@ -1,0 +1,5 @@
+---
+
+- name: ansible-virtualization-guest | prereq | install prerequisite
+  pip:
+    name: jmespath
