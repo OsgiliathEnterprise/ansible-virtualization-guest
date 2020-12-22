@@ -10,8 +10,16 @@
         create: true
         lvnames: []
     virtualization_guest_boxes:
-      - name: fedora-33-cloud
+      - name: fedoraGuestVM
         url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
+        memory_mb: 2048
+        vcpus: 2
+        ssh_port_on_host: 6752 # same as the one in molecule.yml
+        ansible_groups:
+          - directory
+          - openid
+        interfaces:
+          - network: default
     users_group_list:
       - name: libvirt
     systemusers_user_list:
@@ -30,24 +38,6 @@
         netmask: 255.255.255.0
         dhcp_start: 192.168.121.100
         dhcp_end: 192.168.121.200
-    libvirt_vms:
-      - state: present
-        name: 'fedoraGuestVM'
-        memory_mb: 2048
-        vcpus: 2
-        ssh_port_on_host: 6752 # same as the one in molecule.yml
-        ansible_groups:
-          - directory
-          - openid
-        volumes:
-          - name: 'fedora-33-cloud.img'
-            device: 'disk'
-            type: 'file'
-            capacity: '3GB'
-            format: 'qcow2'
-            target: 'hda'  # first device on ide bus
-        interfaces:
-          - network: default
   tasks:
     - name: "Include ansible-virtualization-guest"
       include_role:
