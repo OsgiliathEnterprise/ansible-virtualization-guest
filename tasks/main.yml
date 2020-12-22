@@ -15,9 +15,28 @@
     loop_var: box
 
 - name: ansible-virtualization-guest | run vms
-  import_role:
+  include_role:
     name: stackhpc.libvirt-vm
-  become: true
+  vars:
+    ansible_become: yes
+    libvirt_vms:
+      - state: present
+        name: "{{ box.name }}"
+        memory_mb: "{{ box.memory_mb }}"
+        vcpus: "{{ box.vcpus }}"
+        ssh_port_on_host: "{{ box.ssh_port_on_host }}" # same as the one in molecule.yml
+        ansible_groups: "{{ box.ansible_groups }}"
+        volumes:
+          - name: "{{ box.name }}.img"
+            device: 'disk'
+            type: 'file'
+            capacity: "{{ box.size | default('3GB') }}"
+            format: 'qcow2'
+            target: 'hda'  # first device on ide bus
+        interfaces: "{{ box.interfaces }}"
+  loop: "{{ virtualization_guest_boxes }}"
+  loop_control:
+    loop_var: box
 
 - name: Get current user.
   command: whoami
@@ -49,6 +68,6 @@
 
 - name: ansible-virtualization-guest | loop over vms
   include_tasks: vm.yml
-  loop: "{{ libvirt_vms }}"
+  loop: "{{ virtualization_guest_boxes }}"
   loop_control:
     loop_var: vm
