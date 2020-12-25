@@ -30,9 +30,9 @@
           - name: "{{ box.name }}.img"
             device: 'disk'
             type: 'file'
-            capacity: "{{ box.size | default('3GB') }}"
+            capacity: "{{ box.size | default(ansible_virtualization_guest_min_image_size) }}"
             format: 'qcow2'
-            target: 'hda'  # first device on ide bus
+            target: "{{ ansible_virtualization_guest_vm_image_target }}"
         interfaces: "{{ box.interfaces }}"
   loop: "{{ virtualization_guest_boxes }}"
   loop_control:
@@ -48,6 +48,9 @@
   debug:
     var: whoami
     verbosity: 2
+
+- debug:
+    msg: "{{ lookup('env', 'USER') }}"
 
 - name: ansible-virtualization-guest | ensure ssh directory is here
   file:
