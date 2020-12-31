@@ -24,7 +24,7 @@
         name: "{{ box.name }}"
         memory_mb: "{{ box.memory_mb }}"
         vcpus: "{{ box.vcpus }}"
-        ssh_port_on_host: "{{ box.ssh_port_on_host }}" # same as the one in molecule.yml
+        ssh_port_on_host: "{{ box.ssh_port_on_host | int }}" # same as the one in molecule.yml
         ansible_groups: "{{ box.ansible_groups }}"
         volumes:
           - name: "{{ box.name }}.img"

@@ -24,7 +24,7 @@
     msg: >
       The vm {{ hostcheck.clientid }} will be available
       at host {{ ansible_default_ipv4.address }}
-      and port {{ vm.ssh_port_on_host | default(2222) }}
+      and port {{ vm.ssh_port_on_host | int | default(2222) }}
       and be added to the following ansible groups
       {{ [ 'vms' ] + vm.ansible_groups | list }}
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
