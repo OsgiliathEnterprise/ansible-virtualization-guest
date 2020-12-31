@@ -39,6 +39,13 @@
     var: currentvmnetinfo
     verbosity: 1
 
+- name: ansible-virtualization | stop firewalld service
+  service:
+    name: firewalld
+    state: stopped
+  become: yes
+  # see https://bugzilla.redhat.com/show_bug.cgi?id=1697636
+
 - name: ansible-virtualization-guest | network | configure permanent ip
   virt_net:
     name: "{{ nic.network }}"
@@ -49,16 +56,6 @@
   loop_control:
     loop_var: hostcheck
   when: not currentvmnetinfo.failed
-
-- name: ansible-virtualization | restart libvirtd service
-  service:
-    name: libvirtd
-    state: restarted
-  when:
-    - ansible_facts['distribution'] == "Fedora"
-    - ansible_facts['distribution_major_version'] | int < 32
-  become: yes
-  # see https://bugzilla.redhat.com/show_bug.cgi?id=1697636
 
 - name: ansible-virtualization-guest | network | set ssh redirection
   include_role:
@@ -80,7 +77,6 @@
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
-
 
 - name: ansible-virtualization-guest | network | check default nic forwarding is enabled
   shell: >
