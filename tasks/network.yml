@@ -50,6 +50,16 @@
     loop_var: hostcheck
   when: not currentvmnetinfo.failed
 
+- name: ansible-virtualization | restart libvirtd service
+  service:
+    name: libvirtd
+    state: restarted
+  when:
+    - ansible_facts['distribution'] == "Fedora"
+    - ansible_facts['distribution_major_version'] | int < 32
+  become: yes
+  # see https://bugzilla.redhat.com/show_bug.cgi?id=1697636
+
 - name: ansible-virtualization-guest | network | set ssh redirection
   include_role:
     name: tcharl.ansible_routing
