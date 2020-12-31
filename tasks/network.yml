@@ -44,6 +44,7 @@
     name: firewalld
     state: stopped
   become: yes
+  failed_when: false
   # see https://bugzilla.redhat.com/show_bug.cgi?id=1697636
 
 - name: ansible-virtualization-guest | network | configure permanent ip
