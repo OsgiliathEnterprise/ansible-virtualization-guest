@@ -24,10 +24,6 @@ platforms:
       - "persistent_storage.size = 4000"
       - "persistent_storage.mount = false"
       - "persistent_storage.diskdevice = '/dev/sdb'"
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: yes
-    pre_build_image: yes
 provisioner:
   name: ansible
   env:
