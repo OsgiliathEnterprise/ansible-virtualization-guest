@@ -39,14 +39,6 @@
     var: currentvmnetinfo
     verbosity: 1
 
-- name: ansible-virtualization | stop firewalld service
-  service:
-    name: firewalld
-    state: stopped
-  become: yes
-  failed_when: false
-  # see https://bugzilla.redhat.com/show_bug.cgi?id=1697636
-
 - name: ansible-virtualization-guest | network | configure permanent ip
   virt_net:
     name: "{{ nic.network }}"
