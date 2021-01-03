@@ -39,6 +39,19 @@
     var: currentvmnetinfo
     verbosity: 1
 
+- name: ansible-virtualization-guest | network | reboot libvirtd # bug in firewalld
+  service:
+    name: libvirtd
+    state: restarted
+  become: true
+
+- name: ansible-virtualization-guest | network | reboot firewalld # bug in firewalld
+  service:
+    name: firewalld
+    state: restarted
+  failed_when: false
+  become: true
+
 - name: ansible-virtualization-guest | network | configure permanent ip
   virt_net:
     name: "{{ nic.network }}"
