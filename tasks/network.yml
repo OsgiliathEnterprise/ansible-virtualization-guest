@@ -43,6 +43,7 @@
   service:
     name: libvirtd
     state: restarted
+  changed_when: false
   become: true
 
 - name: ansible-virtualization-guest | network | reboot firewalld # bug in firewalld
@@ -50,6 +51,7 @@
     name: firewalld
     state: restarted
   failed_when: false
+  changed_when: false
   become: true
 
 - name: ansible-virtualization-guest | network | configure permanent ip
