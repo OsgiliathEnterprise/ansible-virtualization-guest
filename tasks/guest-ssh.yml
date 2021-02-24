@@ -1,6 +1,6 @@
 ---
 
-- name: ansible-virtualization-guest | ssh | download vagrant insecure key
+- name: ansible-virtualization-guest | guest-ssh | download vagrant insecure key
   get_url:
     url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}"
@@ -8,7 +8,7 @@
     group: "{{ whoami.stdout }}"
     mode: '0600'
 
-- name: ansible-virtualization-guest | ssh | download vagrant insecure public key
+- name: ansible-virtualization-guest | guest-ssh | download vagrant insecure public key
   get_url:
     url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}.pub"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub"
@@ -16,24 +16,18 @@
     group: "{{ whoami.stdout }}"
     mode: '0644'
 
-- name: ansible-virtualization-guest | ssh | execute ssh add
+- name: ansible-virtualization-guest | guest-ssh | execute ssh add
   shell: >
     eval "$(ssh-agent)" &&
     ssh-add /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
   changed_when: false
 
-- name: ansible-virtualization-guest | ssh | check if vm has already been configured by ansible
-  stat:
-    path: "/home/{{ whoami.stdout }}/.ssh/authorizedOn{{ vm.name }}"
-  register: ssh_configured
-
-- name: ansible-virtualization-guest | ssh | ssh copy authorized key
+- name: ansible-virtualization-guest | guest-ssh | ssh copy authorized key
   shell: >
     scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
     /home/{{ whoami.stdout }}/.ssh/authorized_keys
-    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ ansible_virtualization_guest_vm_user }}/.ssh &&
-    touch /home/{{ whoami.stdout }}/.ssh/authorizedOn{{ vm.name }}
+    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ ansible_virtualization_guest_vm_user }}/.ssh
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
-  when: not ssh_configured.stat.exists
+

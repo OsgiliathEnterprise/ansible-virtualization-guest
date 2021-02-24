@@ -12,8 +12,9 @@ lint: yamllint . && flake8 && ansible-lint --exclude=meta
 platforms:
   - name: Fedora-Molecule-Virtualization-Guest-VB
     box: fedora/31-cloud-base
-    cpus: 8
-    memory: 12288
+    provider_options:
+      cpus: 8
+      memory: 12288
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--nested-hw-virt', 'on']"
     instance_raw_config_args:

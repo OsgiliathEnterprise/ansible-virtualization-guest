@@ -1,6 +1,9 @@
 ---
 # tasks file for ansible-virtualization-guest
 
+- name: ansible-virtualization-guest | initialize persistent facts
+  include_tasks: persistent-facts.yml
+
 - name: ansible-virtualization-guest | create remote temporary directory
   changed_when: false
   tempfile:
@@ -51,6 +54,7 @@
 
 - debug:
     msg: "{{ lookup('env', 'USER') }}"
+    verbosity: 2
 
 - name: ansible-virtualization-guest | ensure ssh directory is here
   file:
@@ -69,8 +73,21 @@
   with_items:
     - "{{ whoami }}"
 
+- name: ansible-virtualization-guest | applies host network forwarding
+  include_tasks: host-ip-forwarding.yml
+
 - name: ansible-virtualization-guest | loop over vms
   include_tasks: vm.yml
   loop: "{{ virtualization_guest_boxes }}"
   loop_control:
     loop_var: vm
+
+- name: save persistent facts
+  template:
+    src: configured_wm_facts.j2
+    dest: "{{ fact_path | default('/etc/ansible/facts.d') }}/ansible_virtualization_guest.fact"
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+
