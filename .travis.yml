@@ -25,12 +25,13 @@ addons:
       - sudo
       - vagrant
 python:
-  - "3.8"
+  - "3.x"
 
 install:
 #  - wget https://releases.hashicorp.com/vagrant/$VAGRANT_VER/vagrant_"$VAGRANT_VER"_x86_64.deb
 #  - sudo apt -y install ./vagrant_"$VAGRANT_VER"_x86_64.deb
   - vagrant plugin install vagrant-libvirt
+  - python -m pip install -U pip
   - pip install wheel pyopenssl
   - pip install jmespath
   - pip install netaddr python-vagrant yamllint testinfra flake8
