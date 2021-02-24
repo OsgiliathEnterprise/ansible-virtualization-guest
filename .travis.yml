@@ -25,17 +25,16 @@ addons:
       - sudo
       - vagrant
 python:
-  - "3.x"
+  - "3.8"
 
 install:
 #  - wget https://releases.hashicorp.com/vagrant/$VAGRANT_VER/vagrant_"$VAGRANT_VER"_x86_64.deb
 #  - sudo apt -y install ./vagrant_"$VAGRANT_VER"_x86_64.deb
   - vagrant plugin install vagrant-libvirt
-  - python -m pip install -U pip
   - pip install wheel pyopenssl
   - pip install jmespath
   - pip install netaddr python-vagrant yamllint testinfra flake8
-  - pip install ansible ansible-lint setuptools-rust
+  - pip install ansible ansible-lint
   - pip install molecule molecule-vagrant python-vagrant
   - sudo chmod o+rwx /var/run/libvirt/libvirt-sock
 
