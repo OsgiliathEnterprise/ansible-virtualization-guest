@@ -25,13 +25,17 @@ jobs:
 
       - name: install lint prerequisite
         run: |
-          curl https://sh.rustup.rs -sSf | sudo sh -s -- -y
-          sudo apt -y install python3-setuptools ansible-lint vagrant python3-setuptools python3 python3-pip
+          sudo -s
+          apt update
+          apt -y update upgrade
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          apt -y install python3-setuptools ansible-lint vagrant python3-setuptools python3 python3-pip
 
       - name: Install molecule
         run: |
-          sudo source $HOME/.cargo/env && sudo pip3 install setuptools-rust wheel
-          sudo pip3 install molecule testinfra yamllint ansible-lint flake8 molecule-vagrant
+          source $HOME/.cargo/env
+          pip3 install setuptools-rust wheel
+          pip3 install molecule testinfra yamllint ansible-lint flake8 molecule-vagrant
 
       - name: molecule lint
         run: |
