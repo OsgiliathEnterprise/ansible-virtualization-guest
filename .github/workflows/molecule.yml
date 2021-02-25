@@ -32,8 +32,8 @@ jobs:
 
       - name: Install molecule
         run: |
-          sudo pip3 install wheel
-          pip3 install setuptools-rust molecule testinfra yamllint ansible-lint flake8 molecule-vagrant
+          sudo pip3 install setuptools-rust wheel
+          pip3 install molecule testinfra yamllint ansible-lint flake8 molecule-vagrant
 
       - name: molecule lint
         run: |
