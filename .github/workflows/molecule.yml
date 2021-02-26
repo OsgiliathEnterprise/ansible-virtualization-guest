@@ -27,12 +27,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt -y upgrade
-          curl https://sh.rustup.rs -sSf | sudo sh -s -- -y
-          sudo apt -y install python3-setuptools ansible-lint vagrant python3-setuptools python3 python3-pip
+          sudo apt -y install rustc python3-setuptools ansible-lint vagrant python3-setuptools python3 python3-pip
 
       - name: Install molecule
         run: |
-          sudo PATH=$PATH:$HOME/.cargo/bin pip3 install setuptools-rust wheel
+          sudo pip3 install setuptools-rust wheel
           sudo pip3 install molecule testinfra yamllint ansible-lint flake8 molecule-vagrant
 
       - name: molecule lint
