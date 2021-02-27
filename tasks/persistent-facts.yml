@@ -22,4 +22,3 @@
 - name: setting fact
   set_fact:
     ansible_virtualization_guest_configuredvms: "{{ ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | select() | unique | list }}"
-

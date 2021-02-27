@@ -1,17 +1,17 @@
 ---
 
 - name: ansible-virtualization-guest | host-ip-forwarding | permanently allow traffic forwarding on host nic
-  template:
-    src: sysctl_d_50_network-forwarding.conf.j2
-    dest: "{{ ansible_sysctl_config_path }}/50-network-forwarding.conf"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
 
-- name: ansible-virtualization-guest | host-ip-forwarding | allow traffic forwarding on host nic
-  command: "sysctl -p {{ ansible_sysctl_config_path }}/50-network-forwarding.conf"
-  changed_when: false
-  failed_when: false
-  become: true
-  notify: ansible-routing | handler | reload-firewall
+- name: ansible-virtualization-guest | host-ip-forwarding | permanently allow traffic forwarding on host nic
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
