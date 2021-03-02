@@ -1,5 +1,6 @@
 galaxy_info:
-  author: Charlie Mordant
+  role_name: ansible_virtualization_guest
+  author: OsgiliathEnterprise
   description: Installs and configures a vagrant cloud VM with libvirt
   company: Osgiliath
 

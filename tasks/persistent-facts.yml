@@ -1,0 +1,24 @@
+---
+
+- name: ansible-virtualization-guest | persistent-facts | Create etc/ansible (may throw exception if fact_path is configured)
+  file:
+    path: "{{ fact_path | default('/etc/ansible') }}"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name:  ansible-virtualization-guest | persistent-facts | Create fact directory
+  file:
+    path: "{{ fact_path | default('/etc/ansible/facts.d') }}"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name:  ansible-virtualization-guest | persistent-facts | read persisted facts
+  debug:
+    msg: "{{ ansible_local | json_query('ansible_virtualization_guest.general.configuredvm') | default ([]) }}"
+  register: ansible_virtualization_guest_configuredvms_tmp
+
+- name: setting fact
+  set_fact:
+    ansible_virtualization_guest_configuredvms: "{{ ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | select() | unique | list }}"

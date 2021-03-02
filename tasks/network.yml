@@ -86,39 +86,9 @@
   loop_control:
     loop_var: hostcheck
 
-- name: ansible-virtualization-guest | network | check default nic forwarding is enabled
-  shell: >
-    set -o pipefail &&
-    sysctl net.ipv4.conf.{{ ansible_default_ipv4.interface }}.forwarding | cut -d " " -f 3
-  register: forwardingenabled
-  become: true
-  changed_when: false
-
-- name: ansible-virtualization-guest | network | debug forwardingenabled variable
-  debug:
-    var: forwardingenabled
-    verbosity: 1
-
-- name: ansible-virtualization-guest | network | allow traffic forwarding on host nic
-  command: "sysctl -w net.ipv4.conf.{{ ansible_default_ipv4.interface }}.forwarding=1"
-  become: true
-  when:
-    - forwardingenabled is success
-    - forwardingenabled.rc == 0
-    - forwardingenabled.stdout == 1
-  notify: ansible-routing | handler | reload-firewall
-
-- name: ansible-virtualization-guest | network | permanently allow traffic forwarding on host nic
-  template:
-    src: sysctl_d_50_default.conf.j2
-    dest: "{{ ansible_sysctl_config_path }}/50-default.conf"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-
 - name: ansible-virtualization-guest | network | trigger ssh role
   include_tasks: guest-ssh.yml
+  when: not vm.name in ansible_virtualization_guest_configuredvms
 
 - name: ansible-virtualization-guest | network | trigger ansible hosts role
   include_tasks: ansible-hosts.yml
