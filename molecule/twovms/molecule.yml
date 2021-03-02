@@ -2,7 +2,9 @@
 dependency:
   name: galaxy
   options:
-    role-file: molecule/requirements.yml
+    requirements-file: requirements-collections.yml
+    collections-path: ../community-collections
+    role-file: requirements.yml
     roles-path: ../community
 driver:
   name: vagrant

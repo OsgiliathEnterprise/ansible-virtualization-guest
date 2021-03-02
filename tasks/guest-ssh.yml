@@ -1,7 +1,7 @@
 ---
 
 - name: ansible-virtualization-guest | guest-ssh | download vagrant insecure key
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}"
     owner: "{{ whoami.stdout }}"
@@ -9,7 +9,7 @@
     mode: '0600'
 
 - name: ansible-virtualization-guest | guest-ssh | download vagrant insecure public key
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}.pub"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub"
     owner: "{{ whoami.stdout }}"
@@ -17,13 +17,13 @@
     mode: '0644'
 
 - name: ansible-virtualization-guest | guest-ssh | execute ssh add
-  shell: >
+  ansible.builtin.shell: >
     eval "$(ssh-agent)" &&
     ssh-add /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
   changed_when: false
 
 - name: ansible-virtualization-guest | guest-ssh | ssh copy authorized key
-  shell: >
+  ansible.builtin.shell: >
     scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
     /home/{{ whoami.stdout }}/.ssh/authorized_keys
     {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ ansible_virtualization_guest_vm_user }}/.ssh
@@ -31,3 +31,13 @@
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
+
+- name: ansible-virtualization-guest | guest-ssh | remove former guest key from host
+  ansible.builtin.file:
+    path: /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
+    state: absent
+
+- name: ansible-virtualization-guest | guest-ssh | remove former guest public key from host
+  ansible.builtin.file:
+    path: /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub
+    state: absent

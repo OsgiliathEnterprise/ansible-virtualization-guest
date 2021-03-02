@@ -1,18 +1,18 @@
 ---
 
 - name: ansible-virtualization-guest | vm | vm xml
-  virt:
+  community.libvirt.virt:
     name: "{{ vm.name }}"
     command: get_xml
   register: vmxml
 
 - name: ansible-virtualization-guest | vm | Debug vminfo
-  debug:
+  ansible.builtin.debug:
     var: vmxml
     verbosity: 1
 
 - name: ansible-virtualization-guest | vm | loop over nics
-  include_tasks: network.yml
+  ansible.builtin.include_tasks: network.yml
   loop: "{{ vm.interfaces }}"
   loop_control:
     loop_var: nic

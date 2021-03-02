@@ -1,7 +1,7 @@
 ---
 
 - name: ansible-virtualization-guest | network | wait for leases to be available
-  virt_net:
+  community.libvirt.virt_net:
     command: info
     name: "{{ nic.network }}"
   register: fullnetinfo
@@ -10,44 +10,43 @@
   until: fullnetinfo.networks.default.dhcp_leases | length > 0
 
 - name: ansible-virtualization-guest | network | Debug fullnetinfo
-  debug:
+  ansible.builtin.debug:
     var: fullnetinfo
     verbosity: 1
 
 - name: ansible-virtualization-guest | network | extract current vm xml
-  xml:
+  community.general.xml:
     xmlstring: "{{ vmxml.get_xml }}"
     xpath: "/domain/devices/interface[@type='network']/mac"  # /mac/@address
-    attribute: address
     content: attribute
   register: vmmacaddress
 
 - name: ansible-virtualization-guest | network | Debug vm mac address
-  debug:
+  ansible.builtin.debug:
     var: vmmacaddress
     verbosity: 2
 
 - name: ansible-virtualization-guest | network | extract current mac netinfo
   vars:
     query: "[?mac == '{{ vmmacaddress.matches.0.mac.address }}' ]"
-  debug:
+  ansible.builtin.debug:
     msg: "{{ fullnetinfo.networks.default.dhcp_leases | json_query(query) }}"
   register: currentvmnetinfo
 
 - name: ansible-virtualization-guest | network | Debug currentvmnetinfo
-  debug:
+  ansible.builtin.debug:
     var: currentvmnetinfo
     verbosity: 1
 
 - name: ansible-virtualization-guest | network | reboot libvirtd # bug in firewalld
-  service:
+  ansible.builtin.service:
     name: libvirtd
     state: restarted
   changed_when: false
   become: true
 
 - name: ansible-virtualization-guest | network | reboot firewalld # bug in firewalld
-  service:
+  ansible.builtin.service:
     name: firewalld
     state: restarted
   failed_when: false
@@ -55,7 +54,7 @@
   become: true
 
 - name: ansible-virtualization-guest | network | configure permanent ip
-  virt_net:
+  community.libvirt.virt_net:
     name: "{{ nic.network }}"
     command: modify
     xml: "<host mac='{{ hostcheck.mac }}' id='{{ hostcheck.clientid }}' name='{{ vm.name }}' ip='{{ hostcheck.ipaddr }}'/>"
@@ -66,7 +65,7 @@
   when: not currentvmnetinfo.failed
 
 - name: ansible-virtualization-guest | network | set ssh redirection
-  include_role:
+  ansible.builtin.include_role:
     name: tcharl.ansible_routing
   vars:
     firewalld_zones:
@@ -87,8 +86,8 @@
     loop_var: hostcheck
 
 - name: ansible-virtualization-guest | network | trigger ssh role
-  include_tasks: guest-ssh.yml
+  ansible.builtin.include_tasks: guest-ssh.yml
   when: not vm.name in ansible_virtualization_guest_configuredvms
 
 - name: ansible-virtualization-guest | network | trigger ansible hosts role
-  include_tasks: ansible-hosts.yml
+  ansible.builtin.include_tasks: ansible-hosts.yml

@@ -2,23 +2,23 @@
 # tasks file for ansible-virtualization-guest
 
 - name: ansible-virtualization-guest | initialize persistent facts
-  include_tasks: persistent-facts.yml
+  ansible.builtin.include_tasks: persistent-facts.yml
 
 - name: ansible-virtualization-guest | create remote temporary directory
   changed_when: false
-  tempfile:
+  ansible.builtin.tempfile:
     state: directory
     suffix: isos
   register: isosTempRemoteDirectory
 
 - name: "ansible-virtualization-guest | Extract {{ box.name }}.tar into libvirt images folder"
-  include_tasks: unarchive-box.yml
+  ansible.builtin.include_tasks: unarchive-box.yml
   loop: "{{ virtualization_guest_boxes }}"
   loop_control:
     loop_var: box
 
 - name: ansible-virtualization-guest | run vms
-  include_role:
+  ansible.builtin.include_role:
     name: stackhpc.libvirt-vm
   vars:
     ansible_become: yes
@@ -42,7 +42,7 @@
     loop_var: box
 
 - name: Get current user.
-  command: whoami
+  ansible.builtin.command: whoami
   changed_when: false
   become: false
   register: whoami
@@ -52,12 +52,13 @@
     var: whoami
     verbosity: 2
 
-- debug:
+- name: ansible-virtualization-guest |
+  debug:
     msg: "{{ lookup('env', 'USER') }}"
     verbosity: 2
 
 - name: ansible-virtualization-guest | ensure ssh directory is here
-  file:
+  ansible.builtin.file:
     path: "/home/{{ whoami.stdout }}/.ssh"
     state: directory
     owner: "{{ whoami.stdout }}"
@@ -65,7 +66,7 @@
     mode: '0700'
 
 - name: ansible-virtualization-guest | Add libvirt group to current user
-  user:
+  ansible.builtin.user:
     name: "{{ item.stdout }}"
     groups: libvirt
     append: yes
@@ -74,17 +75,17 @@
     - "{{ whoami }}"
 
 - name: ansible-virtualization-guest | applies host network forwarding
-  include_tasks: host-ip-forwarding.yml
+  ansible.builtin.include_tasks: host-ip-forwarding.yml
 
 - name: ansible-virtualization-guest | loop over vms
-  include_tasks: vm.yml
+  ansible.builtin.include_tasks: vm.yml
   loop: "{{ virtualization_guest_boxes }}"
   loop_control:
     loop_var: vm
 
 - name: save persistent facts
-  template:
-    src: configured_wm_facts.j2
+  ansible.builtin.template:
+    src: configured_vm_facts.j2
     dest: "{{ fact_path | default('/etc/ansible/facts.d') }}/ansible_virtualization_guest.fact"
     owner: root
     group: root
