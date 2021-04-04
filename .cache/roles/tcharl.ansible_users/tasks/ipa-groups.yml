@@ -1,0 +1,6 @@
+---
+
+- name: ansible-users | ipa-groups | manage ipa-groups
+  freeipa.ansible_freeipa.ipagroup:
+    ipaadmin_password: "{{ company_realm_password }}"
+    name: "{{ group.name }}"

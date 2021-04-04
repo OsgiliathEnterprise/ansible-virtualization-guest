@@ -1,0 +1,25 @@
+---
+
+- name: ansible-users | ipa-users | manage ipa-users
+  freeipa.ansible_freeipa.ipauser:
+    ipaadmin_password: "{{ company_realm_password }}"
+    name: "{{ user.name }}"
+    first: "{{ user.first }}"
+    last: "{{ user.last }}"
+    passwordexpiration: "{{ user.passwordexpiration | default(omit) }}"
+    password: "{{ user.pwd }}"
+    update_password: on_create
+
+- name: ansible-users | ipa-users | manage ipa-group
+  freeipa.ansible_freeipa.ipagroup:
+    ipaadmin_password: "{{ company_realm_password }}"
+    name: "{{ user.group }}"
+    action: member
+    user:
+     - "{{ user.name }}"
+
+- name: ansible-users | ipa-users | manage ipa-groups
+  include: ipa-user-groups.yml
+  loop: "{{ user.groups.split(' ') }}"
+  loop_control:
+    loop_var: group

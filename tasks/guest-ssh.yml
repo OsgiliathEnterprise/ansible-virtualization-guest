@@ -1,26 +1,20 @@
 ---
 
-- name: ansible-virtualization-guest | guest-ssh | download vagrant insecure key
+- name: ansible-virtualization-guest | guest-ssh | download ssh key to connect to vm
   ansible.builtin.get_url:
-    url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}"
+    url: "{{ vm.vm_ssh_key_url | default(ansible_vagrant_key_url) }}"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}"
     owner: "{{ whoami.stdout }}"
     group: "{{ whoami.stdout }}"
     mode: '0600'
 
-- name: ansible-virtualization-guest | guest-ssh | download vagrant insecure public key
+- name: ansible-virtualization-guest | guest-ssh | download download public key to connect to vm
   ansible.builtin.get_url:
-    url: "{{ vm.vm_ssh_key | default(ansible_vagrant_key_url) }}.pub"
+    url: "{{ vm.vm_ssh_key_url | default(ansible_vagrant_key_url) }}.pub"
     dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub"
     owner: "{{ whoami.stdout }}"
     group: "{{ whoami.stdout }}"
     mode: '0644'
-
-- name: ansible-virtualization-guest | guest-ssh | execute ssh add
-  ansible.builtin.shell: >
-    eval "$(ssh-agent)" &&
-    ssh-add /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
-  changed_when: false
 
 - name: ansible-virtualization-guest | guest-ssh | ssh copy authorized key
   ansible.builtin.shell: >

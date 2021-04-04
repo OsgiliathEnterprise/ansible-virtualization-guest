@@ -1,0 +1,53 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    local_users_group_list:
+      - name: cmordante
+      - name: shouldnotbeaddegroup
+        freeipa: yes
+    local_users_user_list:
+      - name: cmordant
+        group: cmordante
+        groups: wheel
+        cron_allow: false
+        authorized_keys:
+          - >
+            ssh-rsa AAAAB3NzaC1yc2EAAAcccQABAAACAQDeWwsRxiaOhL2DJLZxCZAhL4D/2A
+            +KdzklWLyak6TKvncshzxh3tv0lo6FGZIV/1umOLHCvKpbyOZuGkvS8v99m9GIsQn
+            R6cSXasAczJbqaEMI/N5gDBg2bAuG2lcfmwqfFnaY4D62Wb14GqdnKsydLPXONoXcqbL
+            OuiwZbOjP6Zz/uF22pn18wS/c3vH2nvSASdEiZ5Ths/DFMN6nk/W7dAP2rOOl508d1du
+            aM4Z9ivz6IV61KbgaeNMvU4VXq3X2idOHsgBNprwgcj/nJqLTTIMk/l+J6SIGl6+znPb
+            P5LwJSg2ls/YmhPe4XYfsQv2jCivbEq1jEDaqreEoNgwS86G4xkwm9yCq9PnHb4bCa3l
+            UhUf5ut2Bjs/T1rqZ1v/mNtzjQxujxMxVXp3Y875OMnF4LvZTZGOC+M5cU25ZU1+3ZyV
+            yAKtBFI8T0NkZ/Gr7KpEqvkYapsPLIl3PbWI+2IeSU9ZcXNwSC5Dw0wuC9rN8N2pYi1P
+            d08efWDX/kGeeFLyUxjCs6bo50BzsDnWVzxEO9Dk2f2YLi0qYyUglD9KOwzU2Q9Mixhy
+            jnXTet478HjHlm729oJzWjaDTy2B2RQ//74ebYY9WRELvU1SQsFwPJNeOuipYrYS2B0Y
+            MkzbTOvJ4nF1NPcwgjp1AVXm64zFUsogxt6wtiuX1eL6HCQ== toto@toto.com
+      - name: shouldnoptbeadded
+        group: shouldnotbeaddegroup
+        freeipa: yes
+        groups: wheel
+        cron_allow: false
+        authorized_keys:
+          - >
+            ssh-rsa AAAAB3NzaC1yc2EAAAcccQABAAACAQDeWwsRxiaOhL2DJLZxCZAhL4D/2A
+            +KdzklWLyak6TKvncshzxh3tv0lo6FGZIV/1umOLHCvKpbyOZuGkvS8v99m9GIsQn
+            R6cSXasAczJbqaEMI/N5gDBg2bAuG2lcfmwqfFnaY4D62Wb14GqdnKsydLPXONoXcqbL
+            OuiwZbOjP6Zz/uF22pn18wS/c3vH2nvSASdEiZ5Ths/DFMN6nk/W7dAP2rOOl508d1du
+            aM4Z9ivz6IV61KbgaeNMvU4VXq3X2idOHsgBNprwgcj/nJqLTTIMk/l+J6SIGl6+znPb
+            P5LwJSg2ls/YmhPe4XYfsQv2jCivbEq1jEDaqreEoNgwS86G4xkwm9yCq9PnHb4bCa3l
+            UhUf5ut2Bjs/T1rqZ1v/mNtzjQxujxMxVXp3Y875OMnF4LvZTZGOC+M5cU25ZU1+3ZyV
+            yAKtBFI8T0NkZ/Gr7KpEqvkYapsPLIl3PbWI+2IeSU9ZcXNwSC5Dw0wuC9rN8N2pYi1P
+            d08efWDX/kGeeFLyUxjCs6bo50BzsDnWVzxEO9Dk2f2YLi0qYyUglD9KOwzU2Q9Mixhy
+            jnXTet478HjHlm729oJzWjaDTy2B2RQ//74ebYY9WRELvU1SQsFwPJNeOuipYrYS2B0Y
+            MkzbTOvJ4nF1NPcwgjp1AVXm64zFUsogxt6wtiuX1eL6HCQ== toto@toto.com
+    local_systemusers_user_list:
+      - name: systemuser
+        group: cmordante
+        groups: wheel
+
+  tasks:
+    - name: "Include Ansible users"
+      include_role:
+        name: "ansible-users"

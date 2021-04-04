@@ -27,6 +27,7 @@ Also, your should reference some remotely hosted libvirt compliant boxes
         memory_mb: 2048
         vcpus: 1
         ssh_port_on_host: 6752 # same as the one in molecule.yml
+        vm_ssh_key_url: # URL of the key insecure packer key to download
         ansible_groups:
           - directory
           - openid

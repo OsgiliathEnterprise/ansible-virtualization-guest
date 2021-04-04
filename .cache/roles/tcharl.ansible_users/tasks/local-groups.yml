@@ -1,0 +1,8 @@
+---
+
+- name: ansible-users | local-groups | manage local-group with robertdebock role
+  include_role:
+    name: robertdebock.users
+  vars:
+    users_group_list: "{{ local_users_group_list | json_query(\"[?!freeipa]\") | sort | list }}"
+    ansible_become: true

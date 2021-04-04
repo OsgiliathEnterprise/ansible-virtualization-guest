@@ -1,0 +1,10 @@
+---
+# defaults file for hostusers
+system_user_default_create_home: no
+system_user_default_home: "/"
+
+# Ipa stuff
+idm_group: 'ipaservers' # do not change: convention from the ip roles
+company_domain: "osgiliath.test" # That server's hostname will be should ipa."{{ company_domain }}"
+company_realm_password: '123ADMin'
+company_ad_password: '123ADmPass'
