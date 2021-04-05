@@ -20,6 +20,6 @@
 
 - name: ansible-users | ipa-users | manage ipa-groups
   include: ipa-user-groups.yml
-  loop: "{{ user.groups.split(' ') }}"
+  loop: "{{ user.groups }}"
   loop_control:
     loop_var: group

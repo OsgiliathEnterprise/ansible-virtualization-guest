@@ -16,7 +16,8 @@
         update_password: on_create
         passwordexpiration: "2023-01-19 23:59:59"
         group: cmordante
-        groups: wheel
+        groups:
+         - wheel
 
   tasks:
     - name: "Include Ansible users"
