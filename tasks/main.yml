@@ -80,6 +80,7 @@
 - name: ansible-virtualization-guest | loop over vms
   ansible.builtin.include_tasks: vm.yml
   loop: "{{ virtualization_guest_boxes }}"
+  when: not vm.name in ansible_virtualization_guest_configuredvms_tmp | default([])
   loop_control:
     loop_var: vm
 
