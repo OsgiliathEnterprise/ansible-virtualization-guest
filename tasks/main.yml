@@ -14,12 +14,14 @@
 - name: "ansible-virtualization-guest | Extract {{ box.name }}.tar into libvirt images folder"
   ansible.builtin.include_tasks: unarchive-box.yml
   loop: "{{ virtualization_guest_boxes }}"
+  when: not box.name in ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | default([]) | unique | list
   loop_control:
     loop_var: box
 
 - name: ansible-virtualization-guest | run vms
   ansible.builtin.include_role:
     name: stackhpc.libvirt-vm
+  when: not box.name in ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | default([]) | unique | list
   vars:
     ansible_become: yes
     libvirt_vms:
@@ -80,7 +82,7 @@
 - name: ansible-virtualization-guest | loop over vms
   ansible.builtin.include_tasks: vm.yml
   loop: "{{ virtualization_guest_boxes }}"
-  when: not vm.name in ansible_virtualization_guest_configuredvms_tmp | default([])
+  when: not vm.name in ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | default([]) | unique | list
   loop_control:
     loop_var: vm
 
@@ -91,4 +93,6 @@
     owner: root
     group: root
     mode: '0600'
+  vars:
+    ansible_virtualization_guest_configuredvms: "{{ virtualization_guest_boxes }}"
   become: true

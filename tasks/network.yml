@@ -87,7 +87,6 @@
 
 - name: ansible-virtualization-guest | network | trigger ssh role
   ansible.builtin.include_tasks: guest-ssh.yml
-  when: not vm.name in ansible_virtualization_guest_configuredvms
 
 - name: ansible-virtualization-guest | network | trigger ansible hosts role
   ansible.builtin.include_tasks: ansible-hosts.yml
