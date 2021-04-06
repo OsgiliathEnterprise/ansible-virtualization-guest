@@ -1,8 +1,0 @@
----
-
-- name: ansible-users | local-users | manage local-user with robertdebock role
-  include_role:
-    name: robertdebock.users
-  vars:
-    users_user_list: "{{ local_users_user_list | default([]) | json_query(\"[?!freeipa]\") | list }}"
-    ansible_become: true
