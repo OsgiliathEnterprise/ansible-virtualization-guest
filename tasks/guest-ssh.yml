@@ -20,7 +20,7 @@
   ansible.builtin.shell: >
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
     {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}
-    "sudo useradd {{ whoami.stdout }};sudo mkdir /home/{{ whoami.stdout }}/.ssh;"
+    "sudo useradd {{ whoami.stdout }};sudo usermod -aG wheel {{ whoami.stdout }};sudo mkdir /home/{{ whoami.stdout }}/.ssh;"
   changed_when: false
   failed_when: false
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
@@ -32,7 +32,7 @@
   ansible.builtin.shell: >
     scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
     /home/{{ whoami.stdout }}/.ssh/authorized_keys
-    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ whoami.stdout }}/.ssh
+    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ ansible_virtualization_guest_vm_user }}/.ssh/authorized_keys{{ whoami.stdout }}
   changed_when: false
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
@@ -43,20 +43,8 @@
   ansible.builtin.shell: >
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
     {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}
-    "sudo chown -R {{ whoami.stdout }}:{{ whoami.stdout }} /home/{{ whoami.stdout }}/.ssh;"
+    "sudo mv /home/{{ ansible_virtualization_guest_vm_user }}/.ssh/authorized_keys{{ whoami.stdout }} /home/{{ whoami.stdout }}/.ssh/authorized_keys;sudo chown -R {{ whoami.stdout }}:{{ whoami.stdout }} /home/{{ whoami.stdout }}/.ssh;sudo userdel -f {{ ansible_virtualization_guest_vm_user }};"
   changed_when: false
-  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
-  loop_control:
-    loop_var: hostcheck
-  when: ansible_virtualization_guest_vm_user != whoami.stdout
-
-- name: ansible-virtualization-guest | guest-ssh | delete default user on vm
-  ansible.builtin.shell: >
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
-    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}
-    "sudo userdel -f {{ ansible_virtualization_guest_vm_user }};"
-  changed_when: false
-  failed_when: false
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
@@ -64,10 +52,10 @@
 
 - name: ansible-virtualization-guest | guest-ssh | remove former guest key from host
   ansible.builtin.file:
-    path: /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}
+    path: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}"
     state: absent
 
 - name: ansible-virtualization-guest | guest-ssh | remove former guest public key from host
   ansible.builtin.file:
-    path: /home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub
+    path: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ vm.name }}.pub"
     state: absent

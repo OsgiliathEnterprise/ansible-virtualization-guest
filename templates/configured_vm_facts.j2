@@ -1,2 +1,2 @@
 [general]
-configuredvm={{ ansible_virtualization_guest_configuredvms | unique | join(',') }}
+configuredvm={{ ansible_virtualization_guest_configuredvms | map(attribute='name') | flatten | unique | join(',') }}

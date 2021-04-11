@@ -7,12 +7,11 @@
   register: fullnetinfo
   retries: 70 # travis need a loooooooong setup
   delay: 10
-  until: fullnetinfo.networks.default.dhcp_leases | length > 0
+  until: fullnetinfo.networks.default.dhcp_leases | selectattr('hostname', 'equalto', vm.name.split(".").0) | length > 0
 
 - name: ansible-virtualization-guest | network | Debug fullnetinfo
   ansible.builtin.debug:
     var: fullnetinfo
-    verbosity: 1
 
 - name: ansible-virtualization-guest | network | extract current vm xml
   community.general.xml:
@@ -30,7 +29,7 @@
   vars:
     query: "[?mac == '{{ vmmacaddress.matches.0.mac.address }}' ]"
   ansible.builtin.debug:
-    msg: "{{ fullnetinfo.networks.default.dhcp_leases | json_query(query) }}"
+    msg: "{{ (fullnetinfo.networks.default.dhcp_leases | json_query(query)) | default(fullnetinfo.networks.default.dhcp_leases.0.mac.address )}}"
   register: currentvmnetinfo
 
 - name: ansible-virtualization-guest | network | Debug currentvmnetinfo

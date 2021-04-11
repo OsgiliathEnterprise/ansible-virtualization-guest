@@ -1,8 +1,16 @@
 ---
 # tasks file for ansible-virtualization-guest
 
+- name: ansible-virtualization-guest | delete vms
+  ansible.builtin.include_tasks: delete-vm.yml
+  loop: "{{ virtualization_guest_boxes }}"
+  loop_control:
+    loop_var: vm
+#  when: vm.recreate_machine
+
 - name: ansible-virtualization-guest | initialize persistent facts
   ansible.builtin.include_tasks: persistent-facts.yml
+
 
 - name: ansible-virtualization-guest | create remote temporary directory
   changed_when: false
