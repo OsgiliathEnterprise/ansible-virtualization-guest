@@ -3,19 +3,10 @@
 - name: Collect only facts returned by facter
   ansible.builtin.setup:
 
-- name: ansible-virtualization-guest | persistent-facts | Create etc/ansible (may throw exception if fact_path is configured)
-  ansible.builtin.file:
-    path: "{{ fact_path | default('/etc/ansible') }}"
-    state: directory
-    mode: '0755'
-  become: true
-
-- name:  ansible-virtualization-guest | persistent-facts | Create fact directory
-  ansible.builtin.file:
-    path: "{{ fact_path | default('/etc/ansible/facts.d') }}"
-    state: directory
-    mode: '0755'
-  become: true
+- name:  ansible-virtualization-guest | persistent-facts | read all local facts
+  ansible.builtin.debug:
+    msg: "{{ ansible_local | default ('') }}"
+  register: ansible_virtualization_guest_configuredvms_tmp
 
 - name:  ansible-virtualization-guest | persistent-facts | read persisted facts
   ansible.builtin.debug:

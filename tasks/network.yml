@@ -1,18 +1,4 @@
 ---
-
-- name: ansible-virtualization-guest | network | wait for leases to be available
-  community.libvirt.virt_net:
-    command: info
-    name: "{{ nic.network }}"
-  register: fullnetinfo
-  retries: 70 # travis need a loooooooong setup
-  delay: 10
-  until: fullnetinfo.networks.default.dhcp_leases | selectattr('hostname', 'equalto', vm.name.split(".").0) | length > 0
-
-- name: ansible-virtualization-guest | network | Debug fullnetinfo
-  ansible.builtin.debug:
-    var: fullnetinfo
-
 - name: ansible-virtualization-guest | network | extract current vm xml
   community.general.xml:
     xmlstring: "{{ vmxml.get_xml }}"
@@ -25,11 +11,24 @@
     var: vmmacaddress
     verbosity: 2
 
+- name: ansible-virtualization-guest | network | wait for leases to be available
+  community.libvirt.virt_net:
+    command: info
+    name: "{{ nic.network }}"
+  retries: 70 # travis need a loooooooong setup
+  delay: 10
+  until: fullnetinfo.networks.default.dhcp_leases | selectattr('mac', 'equalto', vmmacaddress.matches.0.mac.address) | length > 0
+  register: fullnetinfo
+
+- name: ansible-virtualization-guest | network | Debug fullnetinfo
+  ansible.builtin.debug:
+    var: fullnetinfo
+
 - name: ansible-virtualization-guest | network | extract current mac netinfo
   vars:
     query: "[?mac == '{{ vmmacaddress.matches.0.mac.address }}' ]"
   ansible.builtin.debug:
-    msg: "{{ (fullnetinfo.networks.default.dhcp_leases | json_query(query)) | default(fullnetinfo.networks.default.dhcp_leases.0.mac.address )}}"
+    msg: "{{ (fullnetinfo.networks.default.dhcp_leases | json_query(query)) | default(fullnetinfo.networks.default.dhcp_leases.0.mac.address) }}"
   register: currentvmnetinfo
 
 - name: ansible-virtualization-guest | network | Debug currentvmnetinfo

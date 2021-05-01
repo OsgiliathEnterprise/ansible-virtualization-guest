@@ -26,6 +26,7 @@ Also, your should reference some remotely hosted libvirt compliant boxes
         url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
         memory_mb: 2048
         vcpus: 1
+        recreate_machine: true # should recreate or not?
         ssh_port_on_host: 6752 # same as the one in molecule.yml
         vm_ssh_key_url: # URL of the key insecure packer key to download
         ansible_groups:

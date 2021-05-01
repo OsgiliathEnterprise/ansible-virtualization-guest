@@ -41,14 +41,6 @@ def test_shell_login_to_vm_is_disabled(host):
     assert 'Permission denied' in cmd.stderr
 
 
-def test_ip_forwarding_is_enabled(host):
-    command = r"""
-    sudo sysctl net.ipv4.conf.eth0.forwarding | \
-    cut -d " " -f 3"""
-    cmd = host.run(command)
-    assert '1' in cmd.stdout
-
-
 def test_service_is_enabled(host):
     command = r"""
      sudo firewall-cmd --list-services --zone=public | \
