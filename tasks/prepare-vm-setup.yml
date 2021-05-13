@@ -1,0 +1,50 @@
+---
+
+- name: ansible-virtualization-guest | create remote temporary directory
+  changed_when: false
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: isos
+  register: isosTempRemoteDirectory
+
+- name: ansible-virtualization-guest | create libvirt group
+  ansible.builtin.include_role:
+    name: tcharl.ansible_users
+  vars:
+    local_users_group_list:
+      - name: libvirt
+
+- name: ansible-virtualization-guest | Add libvirt group to current user
+  ansible.builtin.user:
+    name: "{{ item.stdout }}"
+    groups: libvirt
+    append: yes
+  become: true
+  with_items:
+    - "{{ whoami }}"
+
+- name: ansible-virtualization-guest | post-create | create libvirt conf folder
+  ansible.builtin.file:
+    state: directory
+    dest: "/etc/libvirt"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: ansible-virtualization-guest | post-create | create qemu hooks folder
+  ansible.builtin.file:
+    state: directory
+    dest: "/etc/libvirt/hooks"
+    mode: "0755"
+  become: true
+
+- name: ansible-virtualization-guest | post-create | create qemu hook
+  ansible.builtin.template:
+    src: qemu-hook.j2
+    dest: "/etc/libvirt/hooks/qemu"
+    owner: root
+    group: root
+    mode: '0755'
+  notify: ansible-virtualization-guest | restart libvirtd
+  become: true

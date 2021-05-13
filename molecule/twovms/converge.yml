@@ -31,6 +31,7 @@
         url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
         memory_mb: 2048
         vcpus: 1
+        recreate_machine: False
         ssh_port_on_host: "6752" # same as the one in molecule.yml
         ansible_groups:
           - kube_master
@@ -40,6 +41,7 @@
         url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
         memory_mb: 2048
         vcpus: 1
+        recreate_machine: True
         ssh_port_on_host: "6753" # same as the one in molecule.yml
         ansible_groups:
           - kube_node

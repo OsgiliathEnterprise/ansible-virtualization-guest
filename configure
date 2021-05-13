@@ -3,3 +3,4 @@
 molecule dependency
 
 pip3 install jmespath
+pip3 install netaddr

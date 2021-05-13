@@ -13,9 +13,9 @@
 
 - name: ansible-virtualization-guest | delete-vm | extract machine net info
   vars:
-    query: "[?hostname == '{{ vm.name | lower }}' ]"
+    query: "[?hostname == '{{ vm.name.split(\".\")[0] | lower }}' ]"
   ansible.builtin.debug:
-    msg: "{{ (virsh_net_facts.ansible_facts.ansible_libvirt_networks.default.dhcp_leases | json_query(query)) }}"
+    msg: "{{ virsh_net_facts.ansible_facts.ansible_libvirt_networks.default.dhcp_leases | json_query(query) }}"
   register: currentvm_to_delete_infos
 
 - name: ansible-virtualization-guest | delete-vm | Debug virsh netinfo
@@ -24,15 +24,25 @@
     verbosity: 1
 
 - name: ansible-virtualization-guest | delete-vm | remove dhcp host configuration
-  ansible.builtin.command: "virsh net-update default delete ip-dhcp-host \"<host mac='{{ currentvm_to_delete_infos.msg.0.mac }}' id='{{ currentvm_to_delete_infos.msg.0.clientid }}' name='{{ vm.name }}' ip='{{ currentvm_to_delete_infos.msg.0.ipaddr }}'/>\"  --live"
+  ansible.builtin.command: "virsh net-update default delete ip-dhcp-host \"<host mac='{{ currentvm_to_delete_infos.msg.0.mac }}' id='{{ currentvm_to_delete_infos.msg.0.clientid }}' name='{{ vm.name }}' ip='{{ currentvm_to_delete_infos.msg.0.ipaddr }}'/>\""
   changed_when: false
   failed_when: false
   when: currentvm_to_delete_infos.msg and currentvm_to_delete_infos.msg | length > 0
   become: true
 
-- name: ansible-virtualization-guest | delete-vm | remove dhcp host configuration
+- name: ansible-virtualization-guest | delete-vm | remove firewalld rich rule for tcp
   ansible.posix.firewalld:
-    rich_rule: "rule family=ipv4 forward-port port={{ vm.ssh_port_on_host }} protocol=tcp to-port=22 to-addr={{ currentvm_to_delete_infos.msg.0.ipaddr }} log prefix=ssh-to-guest-{{ vm.name }} "
+    rich_rule: "rule family=ipv4 forward-port port={{ vm.ssh_port_on_host }} protocol=tcp to-port=22 to-addr={{ currentvm_to_delete_infos.msg.0.ipaddr }} log prefix=ssh-to-guest-{{ vm.name }}-tcp"
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: disabled
+  when: currentvm_to_delete_infos.msg and currentvm_to_delete_infos.msg | length > 0
+  become: true
+
+- name: ansible-virtualization-guest | delete-vm | remove firewalld rich rule for udp
+  ansible.posix.firewalld:
+    rich_rule: "rule family=ipv4 forward-port port={{ vm.ssh_port_on_host }} protocol=udp to-port=22 to-addr={{ currentvm_to_delete_infos.msg.0.ipaddr }} log prefix=ssh-to-guest-{{ vm.name }}-udp"
     zone: public
     permanent: yes
     immediate: yes

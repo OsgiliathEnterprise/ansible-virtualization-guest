@@ -17,6 +17,7 @@
         ansible_groups:
           - directory
           - openid
+        recreate_machine: False
         interfaces:
           - network: default
     users_group_list2:

@@ -1,5 +1,29 @@
 ---
 
+- name: "ansible-virtualization-guest  | vm | Extract {{ vm.name }}.tar into libvirt images folder"
+  ansible.builtin.include_tasks: unarchive-box.yml
+
+- name: ansible-virtualization-guest | run vms
+  ansible.builtin.include_role:
+    name: stackhpc.libvirt-vm
+  vars:
+    ansible_become: yes
+    libvirt_vms:
+      - state: present
+        name: "{{ vm.name }}"
+        memory_mb: "{{ vm.memory_mb }}"
+        vcpus: "{{ vm.vcpus }}"
+        ssh_port_on_host: "{{ vm.ssh_port_on_host | int }}" # same as the one in molecule.yml
+        ansible_groups: "{{ vm.ansible_groups }}"
+        volumes:
+          - name: "{{ vm.name }}.img"
+            device: 'disk'
+            type: 'file'
+            capacity: "{{ vm.size | default(ansible_virtualization_guest_min_image_size) }}"
+            format: 'qcow2'
+            target: "{{ ansible_virtualization_guest_vm_image_target }}"
+        interfaces: "{{ vm.interfaces }}"
+
 - name: ansible-virtualization-guest | vm | vm xml
   community.libvirt.virt:
     name: "{{ vm.name }}"

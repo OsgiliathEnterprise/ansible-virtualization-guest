@@ -6,7 +6,10 @@ Ansible virtualization Guest
 * Tests: [![Build Status](https://travis-ci.com/OsgiliathEnterprise/ansible-virtualization-guest.svg?branch=master)](https://travis-ci.com/OsgiliathEnterprise/ansible-virtualization-guest)
 * Chat: [![Join the chat at https://gitter.im/OsgiliathEnterprise/platform](https://badges.gitter.im/OsgiliathEnterprise/platform.svg)](https://gitter.im/OsgiliathEnterprise/platform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This role is a wrapper on top of The [StackHpc VM guest](https://github.com/stackhpc/ansible-role-libvirt-vm) role and permit to deploy a Virtual Machine on libvirt/kvm 
+This role is a wrapper on top of The [StackHpc VM guest](https://github.com/stackhpc/ansible-role-libvirt-vm) role and permit to deploy a Virtual Machine on libvirt/kvm.
+The cool thing with this role is that you can grab any box you want from vagrant cloud: it will download it, start it with libvirt/kvm, override the `vagrant` default user and it's ssh key by the one of the user executing to the role on the guest.
+It will copy its ssh key and add it to sudoers/nologin.
+Finally, it will configure firewalld on the host to let you have access to the guest machine
 
 Requirements
 ------------
@@ -26,7 +29,7 @@ Also, your should reference some remotely hosted libvirt compliant boxes
         url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
         memory_mb: 2048
         vcpus: 1
-        recreate_machine: true # should recreate or not?
+        recreate_machine: true # mandatory should recreate or not?
         ssh_port_on_host: 6752 # same as the one in molecule.yml
         vm_ssh_key_url: # URL of the key insecure packer key to download
         ansible_groups:

@@ -3,78 +3,42 @@
 - name: ansible-virtualization-guest | create default tree and variables
   ansible.builtin.include_tasks: directories-and-users.yml
 
+- name: ansible-virtualization-guest | applies host network forwarding
+  ansible.builtin.include_tasks: host-ip-forwarding.yml
+
 - name: ansible-virtualization-guest | delete vms
   ansible.builtin.include_tasks: delete-vm.yml
-  loop: "{{ virtualization_guest_boxes }}"
-  when: vm.recreate_machine is defined and vm.recreate_machine
+  loop: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', True) }}"
   loop_control:
     loop_var: vm
 
 - name: ansible-virtualization-guest | initialize persistent facts
   ansible.builtin.include_tasks: persistent-facts.yml
 
-- name: ansible-virtualization-guest | create remote temporary directory
-  changed_when: false
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: isos
-  register: isosTempRemoteDirectory
+- name: ansible-virtualization-guest | vms to (re)create
+  debug:
+    msg: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', True) | union( virtualization_guest_boxes | rejectattr('name', 'in', ansible_virtualization_guest_facts_configured_vm.msg)) }}"
+  register: vmstocreate
 
-- name: "ansible-virtualization-guest | Extract {{ box.name }}.tar into libvirt images folder"
-  ansible.builtin.include_tasks: unarchive-box.yml
-  loop: "{{ virtualization_guest_boxes }}"
-  when: not box.name in ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | default([]) | unique | list
-  loop_control:
-    loop_var: box
-
-- name: ansible-virtualization-guest | run vms
-  ansible.builtin.include_role:
-    name: stackhpc.libvirt-vm
-  when: not box.name in ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | default([]) | unique | list
-  vars:
-    ansible_become: yes
-    libvirt_vms:
-      - state: present
-        name: "{{ box.name }}"
-        memory_mb: "{{ box.memory_mb }}"
-        vcpus: "{{ box.vcpus }}"
-        ssh_port_on_host: "{{ box.ssh_port_on_host | int }}" # same as the one in molecule.yml
-        ansible_groups: "{{ box.ansible_groups }}"
-        volumes:
-          - name: "{{ box.name }}.img"
-            device: 'disk'
-            type: 'file'
-            capacity: "{{ box.size | default(ansible_virtualization_guest_min_image_size) }}"
-            format: 'qcow2'
-            target: "{{ ansible_virtualization_guest_vm_image_target }}"
-        interfaces: "{{ box.interfaces }}"
-  loop: "{{ virtualization_guest_boxes }}"
-  loop_control:
-    loop_var: box
-
-- name: ansible-virtualization-guest | Add libvirt group to current user
-  ansible.builtin.user:
-    name: "{{ item.stdout }}"
-    groups: libvirt
-    append: yes
-  become: true
-  with_items:
-    - "{{ whoami }}"
-
-- name: ansible-virtualization-guest | applies host network forwarding
-  ansible.builtin.include_tasks: host-ip-forwarding.yml
+- name: ansible-virtualization-guest | prepare vm setup
+  ansible.builtin.include_tasks: prepare-vm-setup.yml
 
 - name: ansible-virtualization-guest | loop over vms
   ansible.builtin.include_tasks: vm.yml
-  loop: "{{ virtualization_guest_boxes }}"
-  when: not vm.name in ansible_virtualization_guest_configuredvms_tmp.msg.split(',') | default([]) | unique | list
+  loop: "{{ vmstocreate.msg }}"
   loop_control:
     loop_var: vm
+
+- name: ansible-virtualization-guest | post creation actions
+  ansible.builtin.include_tasks: post-create.yml
 
 - name: ansible-virtualization-guest | save persistent facts
   ansible.builtin.template:
     src: configured_vm_facts.j2
     dest: "{{ fact_path | default('/etc/ansible/facts.d') }}/ansible_virtualization_guest.fact"
+    owner: root
+    group: root
+    mode: '0644'
   vars:
-    ansible_virtualization_guest_configuredvms: "{{ virtualization_guest_boxes }}"
+    ansible_virtualization_guest_configuredvms: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', False) }}"
   become: true

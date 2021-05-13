@@ -1,0 +1,14 @@
+#!/bin/bash
+# Hook to insert NEW rule to allow connection for VMs
+# virbr0 is networking interface for VM and host
+# -----------------------------------------------------------------
+# Written by Vivek Gite under GPL v3.x {https://www.cyberciti.biz}
+# -----------------------------------------------------------------
+# get count
+v=$(/sbin/iptables -L FORWARD -n -v | /usr/bin/grep {{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) }} | /usr/bin/wc -l)
+# avoid duplicate as this hook get called for each VM
+echo "*****************************************************" >> /tmp/libvirt.log
+echo "qemu-hook: $@" >> /tmp/libvirt.log
+echo "amount of matching iptable rules detected $v" >> /tmp/libvirt.log
+echo "*****************************************************" >> /tmp/libvirt.log
+if [ $v -lt 1 ]; then /sbin/iptables -I FORWARD 1 -o virbr0 -m state -s {{ ansible_default_ipv4.address | ipsubnet(24) }} -d {{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) }} --state NEW,RELATED,ESTABLISHED -j ACCEPT; fi

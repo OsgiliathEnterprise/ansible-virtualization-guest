@@ -1,1 +1,9 @@
 ---
+
+- name: ansible-virtualization-guest | handler | reboot libvirtd # bug in firewalld
+  ansible.builtin.service:
+    name: libvirtd
+    state: restarted
+  changed_when: false
+  listen: ansible-virtualization-guest | restart libvirtd
+  become: true
