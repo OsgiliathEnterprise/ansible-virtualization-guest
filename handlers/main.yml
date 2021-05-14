@@ -5,5 +5,12 @@
     name: libvirtd
     state: restarted
   changed_when: false
-  listen: ansible-virtualization-guest | restart libvirtd
+  listen: ansible-virtualization-guest | refresh libvirtd
+  become: true
+
+- name: ansible-virtualization-guest | handler | execute hook # firewalld overriding vm NAT
+  ansible.builtin.command:
+    cmd: /etc/libvirt/hooks/qemu
+  changed_when: false
+  listen: ansible-virtualization-guest | refresh libvirtd
   become: true
