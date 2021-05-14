@@ -63,7 +63,8 @@ def test_virtbridge_in_firewall_public_zone(host):
 
 def test_ifconfig_nat_forward_rule_is_configured(host):
     command = r"""
-     iptables -L FORWARD -n -v | egrep -c '192\.168\.12[1,2]\.0/24\s+state\sNEW'"""
+     iptables -L FORWARD -n -v | \
+     egrep -c '192\.168\.12[1,2]\.0/24\s+state\sNEW'"""
     with host.sudo():
         cmd = host.run(command)
         assert '1' in cmd.stdout
