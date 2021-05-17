@@ -55,7 +55,7 @@ def test_service_is_enabled(host):
 
 def test_virtbridge_in_firewall_public_zone(host):
     command = r"""
-     firewall-cmd --list-interfaces --zone=public | egrep -c 'vibr0'"""
+     firewall-cmd --list-interfaces --zone=public | egrep -c 'virbr0'"""
     with host.sudo():
         cmd = host.run(command)
         assert '1' in cmd.stdout
