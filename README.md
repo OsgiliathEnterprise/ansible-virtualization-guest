@@ -39,6 +39,8 @@ Also, your should reference some remotely hosted libvirt compliant boxes
         interfaces:
           - network: default
 ``` 
+More information on the according variables in [molecule test](./molecule/default/converge.yml) and [defaults variables](./defaults/main.yml)
+
 These boxes will be unpacked in `/var/lib/libvirt/images/{{ box.name }}.img` so that you'll be able to reference it to create your vm
 
 
