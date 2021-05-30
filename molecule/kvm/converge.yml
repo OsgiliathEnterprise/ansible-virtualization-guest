@@ -43,3 +43,7 @@
     - name: "Include ansible-virtualization-guest"
       include_role:
         name: "ansible-virtualization-guest"
+    - name: ansible-virtualization-guest | handler | execute hook # firewalld overriding vm NAT
+      ansible.builtin.command:
+        cmd: "sh /etc/libvirt/hooks/qemu"
+      become: true
