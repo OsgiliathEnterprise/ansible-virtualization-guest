@@ -18,9 +18,10 @@
 
 - name: ansible-virtualization-guest | guest-ssh | ssh add current user info on remote
   ansible.builtin.shell: >
+    set -o pipefail &&
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
     {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}
-    "sudo useradd {{ whoami.stdout }};sudo usermod -aG wheel {{ whoami.stdout }};sudo mkdir /home/{{ whoami.stdout }}/.ssh;set -o pipefail && echo \"{{ whoami.stdout }}     ALL=(ALL) NOPASSWD:ALL\" | (sudo EDITOR='tee -a' visudo);"
+    "sudo useradd {{ whoami.stdout }};sudo usermod -aG wheel {{ whoami.stdout }};sudo mkdir /home/{{ whoami.stdout }}/.ssh;echo \"{{ whoami.stdout }}     ALL=(ALL) NOPASSWD:ALL\" | (sudo EDITOR='tee -a' visudo);"
   changed_when: false
   failed_when: false
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
