@@ -21,6 +21,10 @@ roles:
     source: https://galaxy.ansible.com
     path: ../community
 
+  - name: robertdebock.fail2ban
+    source: https://galaxy.ansible.com
+    path: ../community
+
   - name: robertdebock.users
     source: https://galaxy.ansible.com
     path: ../community
