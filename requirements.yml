@@ -29,6 +29,10 @@ roles:
     source: https://galaxy.ansible.com
     path: ../community
 
+  - name: robertdebock.epel
+    source: https://galaxy.ansible.com
+    path: ../community
+
   - name: robertdebock.bootstrap
     source: https://galaxy.ansible.com
     path: ../community
