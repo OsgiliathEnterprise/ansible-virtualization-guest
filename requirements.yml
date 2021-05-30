@@ -17,6 +17,10 @@ roles:
     source: https://galaxy.ansible.com
     path: ../community
 
+  - name: tcharl.ansible_securehost
+    source: https://galaxy.ansible.com
+    path: ../community
+
   - name: robertdebock.users
     source: https://galaxy.ansible.com
     path: ../community
