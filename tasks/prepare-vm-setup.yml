@@ -5,7 +5,7 @@
   ansible.builtin.tempfile:
     state: directory
     suffix: isos
-  register: isosTempRemoteDirectory
+  register: isos_temp_remote_directory
 
 - name: ansible-virtualization-guest | create libvirt group
   ansible.builtin.include_role:

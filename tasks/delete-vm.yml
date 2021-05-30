@@ -76,6 +76,9 @@
     path: "{{ fact_path | default('/etc/ansible/facts.d') }}/ansible_virtualization_guest.fact"
     regexp: '{{ virtualmachine.name }}(,)?'
     replace: ''
+    owner: root
+    group: root
+    mode: 0644
   failed_when: false
   become: true
 

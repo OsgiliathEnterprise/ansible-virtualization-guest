@@ -20,14 +20,14 @@
     exclude:
       - Vagrantfile
       - metadata.json
-    dest: "{{ isosTempRemoteDirectory.path }}"
+    dest: "{{ isos_temp_remote_directory.path }}"
     remote_src: yes
-    creates: "{{ isosTempRemoteDirectory.path }}/box.img"
+    creates: "{{ isos_temp_remote_directory.path }}/box.img"
   when: not vagrantboxexists.stat.exists
 
 - name: ansible-virtualization-guest | unarchive-box | Copy vagrantbox file if it does not exist
   ansible.builtin.copy:
-    src: "{{ isosTempRemoteDirectory.path }}/box.img"
+    src: "{{ isos_temp_remote_directory.path }}/box.img"
     dest: "/var/lib/libvirt/images/{{ virtualmachine.name }}.img"
     remote_src: yes
     mode: 0640
@@ -36,7 +36,7 @@
 
 - name: ansible-virtualization-guest | unarchive-box | Remove vagrantbox file
   ansible.builtin.file:
-    path: "{{ isosTempRemoteDirectory.path }}/box.img"
+    path: "{{ isos_temp_remote_directory.path }}/box.img"
     state: absent
   when: not vagrantboxexists.stat.exists
   become: true
