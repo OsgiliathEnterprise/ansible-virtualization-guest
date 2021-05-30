@@ -49,9 +49,9 @@ jobs:
           vagrant plugin install vagrant-libvirt
       - name: pip install packages
         run: |
-          pip3 install wheel setuptools-rust netaddr
-          pip3 install ansible pyopenssl python-vagrant yamllint testinfra flake8 ansible ansible-lint molecule molecule-vagrant
-          pip3 install -U PyYAML
+          sudo pip3 install wheel setuptools-rust netaddr
+          sudo pip3 install pyopenssl python-vagrant yamllint testinfra flake8 ansible ansible-lint molecule molecule-vagrant
+          sudo pip3 install -U PyYAML
 #      - name: Test KVM conditions fails
 #        run: |
 #          sudo kvm-ok

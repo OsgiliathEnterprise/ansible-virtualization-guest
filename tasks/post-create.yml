@@ -2,11 +2,11 @@
 
 - name: ansible-virtualization-guest | post-create | ensure all machines are running
   community.libvirt.virt:
-    name: "{{ vm.name }}"
+    name: "{{ virtualmachine.name }}"
     state: running
   loop: "{{ virtualization_guest_boxes }}"
   loop_control:
-    loop_var: vm
+    loop_var: virtualmachine
   become: Yes
 
 - name: ansible-virtualization-guest | post-create | execute hook after a firewall restart

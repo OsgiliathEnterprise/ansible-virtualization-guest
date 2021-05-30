@@ -1,6 +1,6 @@
 ---
 
-- name: "ansible-virtualization-guest  | vm | Extract {{ vm.name }}.tar into libvirt images folder"
+- name: "ansible-virtualization-guest  | vm | Extract {{ virtualmachine.name }}.tar into libvirt images folder"
   ansible.builtin.include_tasks: unarchive-box.yml
 
 - name: ansible-virtualization-guest | run vms
@@ -10,23 +10,23 @@
     ansible_become: yes
     libvirt_vms:
       - state: present
-        name: "{{ vm.name }}"
-        memory_mb: "{{ vm.memory_mb }}"
-        vcpus: "{{ vm.vcpus }}"
-        ssh_port_on_host: "{{ vm.ssh_port_on_host | int }}" # same as the one in molecule.yml
-        ansible_groups: "{{ vm.ansible_groups }}"
+        name: "{{ virtualmachine.name }}"
+        memory_mb: "{{ virtualmachine.memory_mb }}"
+        vcpus: "{{ virtualmachine.vcpus }}"
+        ssh_port_on_host: "{{ virtualmachine.ssh_port_on_host | int }}" # same as the one in molecule.yml
+        ansible_groups: "{{ virtualmachine.ansible_groups }}"
         volumes:
-          - name: "{{ vm.name }}.img"
+          - name: "{{ virtualmachine.name }}.img"
             device: 'disk'
             type: 'file'
-            capacity: "{{ vm.size | default(ansible_virtualization_guest_min_image_size) }}"
+            capacity: "{{ virtualmachine.size | default(ansible_virtualization_guest_min_image_size) }}"
             format: 'qcow2'
             target: "{{ ansible_virtualization_guest_vm_image_target }}"
-        interfaces: "{{ vm.interfaces }}"
+        interfaces: "{{ virtualmachine.interfaces }}"
 
 - name: ansible-virtualization-guest | vm | vm xml
   community.libvirt.virt:
-    name: "{{ vm.name }}"
+    name: "{{ virtualmachine.name }}"
     command: get_xml
   register: vmxml
 
@@ -37,6 +37,13 @@
 
 - name: ansible-virtualization-guest | vm | loop over nics
   ansible.builtin.include_tasks: network.yml
-  loop: "{{ vm.interfaces }}"
+  loop: "{{ virtualmachine.interfaces }}"
   loop_control:
     loop_var: nic
+
+- name: ansible-virtualization-guest | network | reboot libvirtd
+  ansible.builtin.service:
+    name: libvirtd
+    state: restarted
+  changed_when: false
+  become: true

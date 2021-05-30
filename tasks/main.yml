@@ -3,14 +3,11 @@
 - name: ansible-virtualization-guest | create default tree and variables
   ansible.builtin.include_tasks: directories-and-users.yml
 
-- name: ansible-virtualization-guest | applies host network forwarding
-  ansible.builtin.include_tasks: host-ip-forwarding.yml
-
 - name: ansible-virtualization-guest | delete vms
   ansible.builtin.include_tasks: delete-vm.yml
   loop: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', True) }}"
   loop_control:
-    loop_var: vm
+    loop_var: virtualmachine
 
 - name: ansible-virtualization-guest | initialize persistent facts
   ansible.builtin.include_tasks: persistent-facts.yml
@@ -27,7 +24,7 @@
   ansible.builtin.include_tasks: vm.yml
   loop: "{{ vmstocreate.msg }}"
   loop_control:
-    loop_var: vm
+    loop_var: virtualmachine
 
 - name: ansible-virtualization-guest | post creation actions
   ansible.builtin.include_tasks: post-create.yml
