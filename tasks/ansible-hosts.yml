@@ -1,4 +1,8 @@
 ---
+
+- name: ansible-virtualization-guest | ansible-hosts | configure port forward on host
+  ansible.builtin.include_tasks: host-port-forward.yml
+
 - name: ansible-virtualization-guest | ansible-hosts | get current VM host
   ansible.builtin.debug:
     var: ansible_default_ipv4.address

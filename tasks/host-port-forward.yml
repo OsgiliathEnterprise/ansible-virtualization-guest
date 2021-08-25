@@ -1,0 +1,30 @@
+---
+
+- name: ansible-virtualization-guest | network | retreive the vm bridge
+  vars:
+    query: "[?name == '{{ virtualmachine.interfaces.0.network }}'].bridge"
+  ansible.builtin.debug:
+    msg: "{{ libvirt_host_networks | json_query(query) }}"
+  register: bridgename
+
+- name: ansible-virtualization-guest | network | set ssh redirection
+  ansible.builtin.include_role:
+    name: tcharl.ansible_routing
+  vars:
+    firewalld_zones:
+      - name: "{{ ansible_virtualization_guest_network_host_zone }}"
+        masquerade: true
+        nics: "{{ bridgename.msg | default(ansible_virtualization_guest_network_default_nic) }}"
+        port_forward_rules:
+          - port_forward_rule: "ssh-to-guest-{{ virtualmachine.name }}-tcp"
+            family: "{{ ansible_virtualization_guest_network_host_ipversion }}"
+            from_port: "{{ virtualmachine.ssh_port_on_host | default(2222) }}"
+            protocol: tcp
+            to_address: "{{ hostcheck.ipaddr }}"
+            to_port: 22
+        enabled_services:
+          - service: "{{ ansible_virtualization_guest_service_name }}"
+          - service: "{{ ansible_virtualization_guest_service_name_tls }}"
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck
