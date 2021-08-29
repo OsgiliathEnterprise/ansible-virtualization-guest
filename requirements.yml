@@ -4,7 +4,7 @@ roles:
   - name: tcharl.ansible_routing
     source: https://galaxy.ansible.com
 
-  - name: mrlesmithjr.ansible-manage-lvm
+  - name: mrlesmithjr.manage-lvm
     source: https://galaxy.ansible.com
 
   - name: tcharl.ansible_volumes
