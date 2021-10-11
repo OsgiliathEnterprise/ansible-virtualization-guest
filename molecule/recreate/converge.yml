@@ -41,4 +41,4 @@
   tasks:
     - name: "Include ansible-virtualization-guest"
       include_role:
-        name: "ansible-virtualization-guest"
+        name: tcharl.ansible_virtualization_guest
