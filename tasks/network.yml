@@ -44,7 +44,7 @@
   community.libvirt.virt_net:
     name: "{{ nic.network }}"
     command: modify
-    xml: "<host mac='{{ hostcheck.mac }}' id='{{ hostcheck.clientid }}' name='{{ virtualmachine.name }}' ip='{{ hostcheck.ipaddr }}'/>"
+    xml: "<host mac='{{ hostcheck.mac }}' name='{{ virtualmachine.name }}' ip='{{ hostcheck.ipaddr }}'/>"
   become: true
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:

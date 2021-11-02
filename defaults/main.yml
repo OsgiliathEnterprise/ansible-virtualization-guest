@@ -4,7 +4,7 @@
 # The default directory in which to store VM console logs, if a VM-specific log
 # file path is not given.
 
-ansible_virtualization_guest_network_host_zone: public
+ansible_virtualization_guest_network_host_zone: libvirt
 ansible_virtualization_guest_network_default_nic: virbr0
 ansible_virtualization_guest_network_host_ipversion: ipv4
 ansible_virtualization_guest_vm_user: vagrant

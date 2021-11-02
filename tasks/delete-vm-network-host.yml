@@ -20,7 +20,7 @@
     var: already_registered_hosts
 
 - name: ansible-virtualization-guest | delete-vm-network-host | remove dhcp host configuration
-  ansible.builtin.command: "virsh net-update default delete ip-dhcp-host \"<host mac='{{ already_registered_hosts.matches.0.host.mac }}' id='{{ already_registered_hosts.matches.0.host.id }}' name='{{ already_registered_hosts.matches.0.host.name }}' ip='{{ already_registered_hosts.matches.0.host.ip }}'/>\""
+  ansible.builtin.command: "virsh net-update default delete ip-dhcp-host \"<host mac='{{ already_registered_hosts.matches.0.host.mac }}' name='{{ already_registered_hosts.matches.0.host.name }}' ip='{{ already_registered_hosts.matches.0.host.ip }}'/>\""
   changed_when: false
   failed_when: false
   when:
