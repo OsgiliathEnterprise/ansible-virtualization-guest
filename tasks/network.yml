@@ -69,7 +69,6 @@
     name: firewalld
     state: restarted
   failed_when: false
-  changed_when: false
   become: true
 
 - name: ansible-virtualization-guest | network | reboot libvirtd # bug in firewalld

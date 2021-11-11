@@ -13,15 +13,11 @@
   vars:
     local_users_group_list:
       - name: libvirt
-
-- name: ansible-virtualization-guest | Add libvirt group to current user
-  ansible.builtin.user:
-    name: "{{ item.stdout }}"
-    groups: libvirt
-    append: yes
+    local_users_user_list:
+      - name: "{{ whoami }}"
+        group: "{{ whoami }}"
+        groups: libvirt
   become: true
-  with_items:
-    - "{{ whoami }}"
 
 - name: ansible-virtualization-guest | post-create | create libvirt conf folder
   ansible.builtin.file:

@@ -9,8 +9,7 @@
   become: true
 
 - name: ansible-virtualization-guest | handler | execute hook # firewalld overriding vm NAT
-  ansible.builtin.command:
-    cmd: "sh /etc/libvirt/hooks/qemu"
+  ansible.builtin.shell: /etc/libvirt/hooks/qemu
   changed_when: false
   listen: ansible-virtualization-guest | refresh libvirtd
   become: true
