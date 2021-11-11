@@ -10,7 +10,7 @@
         create: true
     virtualization_guest_boxes:
       - name: fedoraGuestVM
-        url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
+        url: https://app.vagrantup.com/fedora/boxes/35-cloud-base/versions/35.20211026.0/providers/libvirt.box
         memory_mb: 2048
         vcpus: 1
         ssh_port_on_host: 6752 # same as the one in molecule.yml
@@ -38,10 +38,9 @@
         netmask: 255.255.255.0
         dhcp_start: 192.168.122.100
         dhcp_end: 192.168.122.200
+  roles:
+    - role: tcharl.ansible_virtualization_guest
   tasks:
-    - name: "Include ansible-virtualization-guest"
-      include_role:
-        name: "ansible-virtualization-guest"
     - name: ansible-virtualization-guest | handler | execute hook # firewalld overriding vm NAT
       ansible.builtin.command:
         cmd: "sh /etc/libvirt/hooks/qemu"
