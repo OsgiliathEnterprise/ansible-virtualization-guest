@@ -14,10 +14,9 @@
     local_users_group_list:
       - name: libvirt
     local_users_user_list:
-      - name: "{{ whoami }}"
-        group: "{{ whoami }}"
+      - name: "{{ whoami.stdout }}"
+        group: "{{ whoami.stdout }}"
         groups: libvirt
-  become: true
 
 - name: ansible-virtualization-guest | post-create | create libvirt conf folder
   ansible.builtin.file:
@@ -38,9 +37,12 @@
 - name: ansible-virtualization-guest | post-create | create qemu hook
   ansible.builtin.template:
     src: qemu-hook.j2
-    dest: "/etc/libvirt/hooks/qemu"
+    dest: "{{ item }}"
     owner: root
     group: root
     mode: '0755'
+  with_items:
+    - /etc/libvirt/hooks/qemu
+    - /etc/libvirt/hooks/daemon
   notify: ansible-virtualization-guest | refresh libvirtd
   become: true

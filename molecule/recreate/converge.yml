@@ -40,3 +40,9 @@
         dhcp_end: 192.168.122.200
   roles:
     - role: tcharl.ansible_virtualization_guest
+  tasks:
+    - name: ansible-virtualization-guest | handler | execute hook # firewalld overriding vm NAT
+      ansible.builtin.service:
+        name: libvirtd
+        state: restarted
+      become: true
