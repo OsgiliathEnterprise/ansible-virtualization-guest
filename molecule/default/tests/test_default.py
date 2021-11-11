@@ -60,8 +60,7 @@ def test_virtbridge_in_firewall_libvirt_zone(host):
         cmd = host.run(command)
         assert '1' in cmd.stdout
 
-
-#TODO fix def test_ifconfig_nat_forward_rule_is_configured(host):
+# TODO fix def test_ifconfig_nat_forward_rule_is_configured(host):
 #    testcommand = "iptables -L FORWARD -n -v"
 #    with host.sudo():
 #        cmd = host.run(testcommand)
