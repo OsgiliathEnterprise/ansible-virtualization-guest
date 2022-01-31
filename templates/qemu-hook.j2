@@ -5,10 +5,12 @@
 # Written by Vivek Gite under GPL v3.x {https://www.cyberciti.biz}
 # -----------------------------------------------------------------
 # get count
-v=$(/sbin/iptables -L FORWARD -n -v | /usr/bin/grep {{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) }} | /usr/bin/wc -l)
+v=$(/sbin/iptables -L FORWARD -n -v --line-numbers | egrep "^1\\s.*{{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) | replace(".", "\.")  }}.*NEW" | /usr/bin/wc -l)
 # avoid duplicate as this hook get called for each VM
 echo "*****************************************************" >> /tmp/libvirt.log
 echo "qemu-hook: $@" >> /tmp/libvirt.log
 echo "amount of matching iptable rules detected $v" >> /tmp/libvirt.log
 echo "*****************************************************" >> /tmp/libvirt.log
 if [ $v -lt 1 ]; then /sbin/iptables -I FORWARD 1 -o {{ ansible_virtualization_guest_network_default_nic }} -m state -s {{ ansible_default_ipv4.address | ipsubnet(24) }} -d {{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) }} --state NEW,RELATED,ESTABLISHED -j ACCEPT; fi
+ADDITIONAL_RULES=/sbin/iptables -L FORWARD -n -v --line-numbers | egrep "{{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) | replace(".", "\.")  }}.*NEW" | cut -d ' ' -f1 | sort -n | tail -n +2
+set -e; iptables -D FORWARD $ADDITIONAL_RULE &> /dev/null || true

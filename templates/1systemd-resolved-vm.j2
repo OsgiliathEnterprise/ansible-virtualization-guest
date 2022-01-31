@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+# Restarts systemd-resolved if internal vm are not accessible
+HOST_TO_CHECK={{ virtualmachine.name }}
+VIRSH_CHECK_COMMAND=`virsh list | grep -c $HOST_TO_CHECK`
+if [ "$VIRSH_CHECK_COMMAND" -eq 1 ]
+then
+	echo "vm is started, checking if can ping"
+	if ping -c 1 $HOST_TO_CHECK &> /dev/null; then echo "succeed to ping kubernetes master"; else systemctl restart systemd-resolved.service; fi
+fi
