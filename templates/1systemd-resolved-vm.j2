@@ -2,7 +2,7 @@
 
 # Restarts systemd-resolved if internal vm are not accessible
 HOST_TO_CHECK={{ virtualmachine.name }}
-VIRSH_CHECK_COMMAND=`virsh list | grep -c $HOST_TO_CHECK`
+VIRSH_CHECK_COMMAND=$(virsh list | grep -c $HOST_TO_CHECK)
 if [ "$VIRSH_CHECK_COMMAND" -eq 1 ]
 then
 	echo "vm is started, checking if can ping"
