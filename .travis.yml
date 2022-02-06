@@ -38,7 +38,12 @@ install:
   - pip install molecule molecule-vagrant python-vagrant jmespath netaddr
   - sudo chmod o+rwx /var/run/libvirt/libvirt-sock
 
-script: travis_wait 30 molecule test --scenario-name kvm
+script:
+  - cd ..
+  - mv ansible-virtualization-guest tcharl.ansible_virtualization_guest
+  - cd tcharl.ansible_virtualization_guest
+  - travis_wait 30 molecule test --scenario-name kvm
+
 branches:
   only:
     - master
