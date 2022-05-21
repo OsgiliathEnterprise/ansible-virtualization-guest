@@ -4,7 +4,7 @@
   ansible.builtin.include_tasks: directories-and-users.yml
 
 - name: ansible-virtualization-guest | install prerequisite - cronie
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   become: true
@@ -21,7 +21,7 @@
   ansible.builtin.include_tasks: persistent-facts.yml
 
 - name: ansible-virtualization-guest | vms to (re)create
-  debug:
+  ansible.builtin.debug:
     msg: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', True) | union( virtualization_guest_boxes | rejectattr('name', 'in', ansible_virtualization_guest_facts_configured_vm.msg)) }}"
   register: vmstocreate
 

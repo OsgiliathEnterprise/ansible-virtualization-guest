@@ -7,12 +7,12 @@
   register: whoami
 
 - name: ansible-virtualization-guest | debug whoami
-  debug:
+  ansible.builtin.debug:
     var: whoami
     verbosity: 2
 
 - name: ansible-virtualization-guest | debug environment user
-  debug:
+  ansible.builtin.debug:
     msg: "{{ lookup('env', 'USER') }}"
     verbosity: 2
 

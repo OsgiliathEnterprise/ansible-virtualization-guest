@@ -35,13 +35,10 @@ install:
   - pip install netaddr python-vagrant yamllint pytest-testinfra flake8
   - pip install ansible-compat==0.5.0 # see https://github.com/ansible-community/molecule/issues/3404
   - pip install ansible ansible-lint
-  - pip install molecule molecule-vagrant python-vagrant jmespath netaddr
+  - pip install molecule molecule-vagrant python-vagrant jmespath
   - sudo chmod o+rwx /var/run/libvirt/libvirt-sock
 
 script:
-  - cd ..
-  - mv ansible-virtualization-guest tcharl.ansible_virtualization_guest
-  - cd tcharl.ansible_virtualization_guest
   - travis_wait 30 molecule test --scenario-name kvm
 
 branches:

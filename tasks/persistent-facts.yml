@@ -15,7 +15,6 @@
   register: raw_ansible_virtualization_guest_facts_configured_vm
   become: true
 
-
 - name:  ansible-virtualization-guest | persistent-facts | convert
   ansible.builtin.debug:
     msg: "{{ raw_ansible_virtualization_guest_facts_configured_vm.msg | default([]) }}"
