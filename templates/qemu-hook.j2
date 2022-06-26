@@ -12,5 +12,5 @@ echo "qemu-hook: $@" >> /tmp/libvirt.log
 echo "amount of matching iptable rules detected $v" >> /tmp/libvirt.log
 echo "*****************************************************" >> /tmp/libvirt.log
 if [ $v -lt 1 ]; then /sbin/iptables -I FORWARD 1 -o {{ ansible_virtualization_guest_network_default_nic }} -m state -s {{ ansible_default_ipv4.address | ipsubnet(24) }} -d {{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) }} --state NEW,RELATED,ESTABLISHED -j ACCEPT; fi
-ADDITIONAL_RULES="/sbin/iptables -L FORWARD -n -v --line-numbers | /bin/egrep \"{{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) | replace(".", "\.")  }}\" | /bin/cut -d ' ' -f1 | /bin/sort -n | /bin/tail -n +2"
+ADDITIONAL_RULES=$(/sbin/iptables -L FORWARD -n -v --line-numbers | /bin/egrep "{{ libvirt_host_networks.0.dhcp_start | ipsubnet(24) | replace(".", "\.")  }}" | /bin/cut -d ' ' -f1 | /bin/sort -n | /bin/tail -n +2)
 for ENTRY in $ADDITIONAL_RULES; do /sbin/iptables -D FORWARD $ENTRY &> /dev/null; done
