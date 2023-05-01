@@ -1,6 +1,6 @@
 ---
 
-- name: ansible-virtualization-guest | post-create | ensure all machines are running
+- name: Post-create | ensure all machines are running
   community.libvirt.virt:
     name: "{{ virtualmachine.name }}"
     state: running
@@ -9,7 +9,7 @@
     loop_var: virtualmachine
   become: Yes
 
-- name: ansible-virtualization-guest | post-create | execute hook after a firewall restart
+- name: Post-create | execute hook after a firewall restart
   ansible.builtin.command:
     cmd: /etc/libvirt/hooks/qemu
   changed_when: false

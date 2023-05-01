@@ -16,9 +16,8 @@ addons:
       - bridge-utils
       - dnsmasq-base
       - ebtables
-      - virtinst
+      - libvirt-bin
       - libvirt-dev
-      - libvirt-daemon-system
       - qemu-kvm
       - qemu-utils
       - ruby-dev
@@ -31,16 +30,12 @@ addons:
 
 install:
   - vagrant plugin install vagrant-libvirt
-  - pip install wheel pyopenssl
-  - pip install netaddr python-vagrant yamllint pytest-testinfra flake8
-  - pip install ansible-compat==0.5.0 # see https://github.com/ansible-community/molecule/issues/3404
-  - pip install ansible ansible-lint
-  - pip install molecule molecule-vagrant python-vagrant jmespath
+  - pip install wheel pyopenssl tox
   - sudo chmod o+rwx /var/run/libvirt/libvirt-sock
 
 script:
-  - travis_wait 30 molecule test --scenario-name kvm
-
+  - mv ../ansible-virtualization-guest ../tcharl.ansible_virtualization_guest
+  - travis_wait 60 tox -e test-exec -- --scenario-name kvm
 branches:
   only:
     - master

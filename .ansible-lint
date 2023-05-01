@@ -1,6 +1,8 @@
 exclude_paths:
  - .cache/
+ - .tox/
  - meta/
  - molecule/
+ - tests/
 skip_list:
    - '106'

@@ -1,14 +1,14 @@
 ---
 
-- name: ansible-virtualization-guest | ansible-hosts | configure port forward on host
+- name: Ansible-hosts | configure port forward on host
   ansible.builtin.include_tasks: host-port-forward.yml
 
-- name: ansible-virtualization-guest | ansible-hosts | get current VM host
+- name: Ansible-hosts | get current VM host
   ansible.builtin.debug:
     var: ansible_default_ipv4.address
     verbosity: 3
 
-- name: ansible-virtualization-guest | ansible-hosts | add vm to hosts
+- name: Ansible-hosts | add vm to hosts
   ansible.builtin.add_host:
     name: "{{ hostcheck.clientid }}"
     ansible_host: "{{ ansible_host }}"
@@ -17,20 +17,20 @@
     ansible_ssh_private_key_file: "{{ ansible_ssh_private_key_file }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
     groups:
-     "{{ [ 'vms' ] + virtualmachine.ansible_groups | list }}"
+     "{{ ['vms'] + virtualmachine.ansible_groups | list }}"
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   changed_when: false
   loop_control:
     loop_var: hostcheck
 
-- name: ansible-virtualization-guest | ansible-hosts | debug vm groups
+- name: Ansible-hosts | debug vm groups
   ansible.builtin.debug:
     msg: >
       The vm {{ hostcheck.clientid }} will be available
       at host {{ ansible_default_ipv4.address }}
       and port {{ virtualmachine.ssh_port_on_host | int | default(2222) }}
       and be added to the following ansible groups
-      {{ [ 'vms' ] + virtualmachine.ansible_groups | list }}
+      {{ ['vms'] + virtualmachine.ansible_groups | list }}
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck

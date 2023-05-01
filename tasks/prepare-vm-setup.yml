@@ -1,21 +1,22 @@
 ---
 
-- name: ansible-virtualization-guest | create remote temporary directory
+- name: Prepare-vm-setup | create remote temporary directory
   changed_when: false
   ansible.builtin.tempfile:
     state: directory
     suffix: isos
   register: isos_temp_remote_directory
 
-- name: ansible-virtualization-guest | create libvirt group
+- name: Prepare-vm-setup | create libvirt group
   ansible.builtin.include_role:
-    name: tcharl.ansible_users
+    name: tcharl.ansible_localuser
   vars:
+    ansible_become: yes
     local_users_group_list:
       - name: libvirt
 
 # not using ansible_user role here as we append the group
-- name: ansible-virtualization-guest | Add libvirt group to current user
+- name: Prepare-vm-setup | Add libvirt group to current user
   ansible.builtin.user:
     name: "{{ item.stdout }}"
     groups: libvirt
@@ -24,7 +25,7 @@
   with_items:
     - "{{ whoami }}"
 
-- name: ansible-virtualization-guest | post-create | create libvirt conf folder
+- name: Prepare-vm-setup | create libvirt conf folder
   ansible.builtin.file:
     state: directory
     dest: "/etc/libvirt"
@@ -33,14 +34,14 @@
     group: "root"
   become: true
 
-- name: ansible-virtualization-guest | post-create | create qemu hooks folder
+- name: Prepare-vm-setup | create qemu hooks folder
   ansible.builtin.file:
     state: directory
     dest: "/etc/libvirt/hooks"
     mode: "0755"
   become: true
 
-- name: ansible-virtualization-guest | post-create | create qemu hook
+- name: Prepare-vm-setup | create qemu hook
   ansible.builtin.template:
     src: qemu-hook.j2
     dest: "{{ item }}"

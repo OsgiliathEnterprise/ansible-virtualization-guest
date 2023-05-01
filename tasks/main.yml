@@ -1,43 +1,41 @@
 ---
 # tasks file for ansible-virtualization-guest
-- name: ansible-virtualization-guest | create default tree and variables
-  ansible.builtin.include_tasks: directories-and-users.yml
+- name: Create default tree and variables
+  ansible.builtin.import_tasks: persistent-facts-directories.yml
 
-- name: ansible-virtualization-guest | install prerequisite - cronie
-  ansible.builtin.package:
-    name: "{{ item }}"
-    state: present
-  become: true
-  with_items:
-    - cronie-anacron
+- name: Create default tree and variables
+  ansible.builtin.include_tasks: ansible-user-directories.yml
 
-- name: ansible-virtualization-guest | delete vms
+- name: Import required packages
+  ansible.builtin.import_tasks: packages.yml
+
+- name: Delete vms which should be recreated
   ansible.builtin.include_tasks: delete-vm.yml
   loop: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', True) }}"
   loop_control:
     loop_var: virtualmachine
 
-- name: ansible-virtualization-guest | initialize persistent facts
+- name: Gather persistent facts
   ansible.builtin.include_tasks: persistent-facts.yml
 
-- name: ansible-virtualization-guest | vms to (re)create
+- name: Vms to (re)create
   ansible.builtin.debug:
-    msg: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', True) | union( virtualization_guest_boxes | rejectattr('name', 'in', ansible_virtualization_guest_facts_configured_vm.msg)) }}"
+    msg: "{{ virtualization_guest_boxes | selectattr('recreate_machine', 'defined') | selectattr('recreate_machine', 'equalto', True) | union(virtualization_guest_boxes | rejectattr('name', 'in', ansible_virtualization_guest_facts_configured_vm.msg)) }}"
   register: vmstocreate
 
-- name: ansible-virtualization-guest | prepare vm setup
+- name: Prepare vm setup
   ansible.builtin.include_tasks: prepare-vm-setup.yml
 
-- name: ansible-virtualization-guest | loop over vms
+- name: Loop over vms to create
   ansible.builtin.include_tasks: vm.yml
   loop: "{{ vmstocreate.msg }}"
   loop_control:
     loop_var: virtualmachine
 
-- name: ansible-virtualization-guest | post creation actions
+- name: Post creation actions
   ansible.builtin.include_tasks: post-create.yml
 
-- name: ansible-virtualization-guest | save persistent facts
+- name: Save VMs persistent facts
   ansible.builtin.template:
     src: configured_vm_facts.j2
     dest: "{{ fact_path | default('/etc/ansible/facts.d') }}/ansible_virtualization_guest.fact"

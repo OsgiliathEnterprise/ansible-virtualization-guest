@@ -1,0 +1,8 @@
+---
+roles:
+  - name: mrlesmithjr.manage-lvm
+  - name: robertdebock.users
+  - name: robertdebock.bootstrap
+  - name: robertdebock.core_dependencies
+  - name: stackhpc.libvirt-vm
+  - name: geerlingguy.ntp

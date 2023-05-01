@@ -1,13 +1,13 @@
 ---
 
-- name: ansible-virtualization-guest | delete-vm-network-host | get current network xml
+- name: Delete-vm-network-host | get current network xml
   community.libvirt.virt_net:
     command: get_xml
     name: "{{ virtualmachine.interfaces.0.network }}"
   register: network_xml
   become: True
 
-- name: ansible-virtualization-guest | delete-vm-network-host | extract current network xml
+- name: Delete-vm-network-host | extract current network xml
   community.general.xml:
     xmlstring: "{{ network_xml.get_xml }}"
     xpath: "/network/ip/dhcp/host[@name='{{ virtualmachine.name }}']"  # /mac/@address
@@ -15,11 +15,11 @@
   failed_when: false
   register: already_registered_hosts
 
-- name: ansible-virtualization-guest | delete-vm-network-host | debug current network xml
+- name: Delete-vm-network-host | debug current network xml
   ansible.builtin.debug:
     var: already_registered_hosts
 
-- name: ansible-virtualization-guest | delete-vm-network-host | remove dhcp host configuration
+- name: Delete-vm-network-host | remove dhcp host configuration
   ansible.builtin.command: "virsh net-update default delete ip-dhcp-host \"<host mac='{{ already_registered_hosts.matches.0.host.mac }}' name='{{ already_registered_hosts.matches.0.host.name }}' ip='{{ already_registered_hosts.matches.0.host.ip }}'/>\""
   changed_when: false
   failed_when: false

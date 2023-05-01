@@ -1,9 +1,9 @@
 ---
 
-- name: "ansible-virtualization-guest  | vm | Extract {{ virtualmachine.name }}.tar into libvirt images folder"
+- name: "Vm | Extract box into libvirt images folder for vm {{ virtualmachine.name }}"
   ansible.builtin.include_tasks: unarchive-box.yml
 
-- name: ansible-virtualization-guest | run vms
+- name: Vm | run vms
   ansible.builtin.include_role:
     name: stackhpc.libvirt-vm
   vars:
@@ -24,31 +24,31 @@
             target: "{{ ansible_virtualization_guest_vm_image_target }}"
         interfaces: "{{ virtualmachine.interfaces }}"
 
-- name: ansible-virtualization-guest | vm | vm xml
+- name: Vm | vm xml
   community.libvirt.virt:
     name: "{{ virtualmachine.name }}"
     command: get_xml
   register: vmxml
 
-- name: ansible-virtualization-guest | vm | Debug vminfo
+- name: Vm | Debug vminfo
   ansible.builtin.debug:
     var: vmxml
     verbosity: 1
 
-- name: ansible-virtualization-guest | vm | loop over nics
+- name: Vm | loop over nics
   ansible.builtin.include_tasks: network.yml
   loop: "{{ virtualmachine.interfaces }}"
   loop_control:
     loop_var: nic
 
-- name: ansible-virtualization-guest | vm | reboot libvirtd
+- name: Vm | restart libvirtd
   ansible.builtin.service:
     name: libvirtd
     state: restarted
   changed_when: false
   become: true
 
-- name: ansible-virtualization-guest | vm | systemd-resolved restarter
+- name: Vm | systemd-resolved restarter
   ansible.builtin.template:
     src: 1systemd-resolved-vm.j2
     dest: "/etc/cron.hourly/1systemd-resolved-{{ virtualmachine.name }}"

@@ -1,0 +1,15 @@
+---
+
+- name: Persistent-facts-directories | Create etc/ansible (may throw exception if fact_path is configured)
+  ansible.builtin.file:
+    path: "{{ fact_path | default('/etc/ansible') }}"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name:  Persistent-facts-directories | Create fact directory
+  ansible.builtin.file:
+    path: "{{ fact_path | default('/etc/ansible/facts.d') }}"
+    state: directory
+    mode: '0755'
+  become: true

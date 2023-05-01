@@ -1,0 +1,25 @@
+---
+
+- name: Ansible-user-directories | Get current user.
+  ansible.builtin.command: whoami
+  changed_when: false
+  become: false
+  register: whoami
+
+- name: Ansible-user-directories | debug whoami
+  ansible.builtin.debug:
+    var: whoami
+    verbosity: 2
+
+- name: Ansible-user-directories | debug environment user
+  ansible.builtin.debug:
+    msg: "{{ lookup('env', 'USER') }}"
+    verbosity: 2
+
+- name: Ansible-user-directories | ensure ssh directory is here
+  ansible.builtin.file:
+    path: "/home/{{ whoami.stdout }}/.ssh"
+    state: directory
+    owner: "{{ whoami.stdout }}"
+    group: "{{ whoami.stdout }}"
+    mode: '0700'

@@ -1,13 +1,13 @@
 ---
 
-- name: ansible-virtualization-guest | network | retreive the vm bridge
+- name: Host-port-forward | retrieve the vm bridge
   vars:
     query: "[?name == '{{ virtualmachine.interfaces.0.network }}'].bridge"
   ansible.builtin.debug:
     msg: "{{ libvirt_host_networks | json_query(query) }}"
   register: bridgename
 
-- name: ansible-virtualization-guest | network | set ssh redirection
+- name: Host-port-forward | set ssh redirection
   ansible.builtin.include_role:
     name: tcharl.ansible_routing
   vars:

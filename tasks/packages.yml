@@ -1,0 +1,9 @@
+---
+
+- name: Packages | install prerequisite - cronie
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  become: true
+  with_items:
+    - cronie-anacron

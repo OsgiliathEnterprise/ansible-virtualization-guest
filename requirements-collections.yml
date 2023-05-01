@@ -1,14 +1,5 @@
 ---
 collections:
-  - name: freeipa.ansible_freeipa
-    source: https://galaxy.ansible.com
-    path: ../community-collections
   - name: ansible.posix
-    source: https://galaxy.ansible.com
-    path: ../community-collections
   - name: community.libvirt
-    source: https://galaxy.ansible.com
-    path: ../community-collections
   - name: community.general
-    source: https://galaxy.ansible.com
-    path: ../community-collections

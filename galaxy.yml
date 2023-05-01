@@ -1,0 +1,21 @@
+---
+namespace: "tcharl"
+name: "ansible_virtualization_guest"
+version: "1.0.1"
+description: "Ansible roles that bootstraps VMs on linux"
+
+authors:
+  - "Charlie Mordant <cmordant1@gmail.com>"
+
+repository: "https://github.com/OsgiliathEnterprise/ansible-virtualization-guest"
+documentation: "https://github.com/OsgiliathEnterprise/ansible-virtualization-guest/blob/master/README.md"
+homepage: "https://github.com/OsgiliathEnterprise/ansible-virtualization-guest"
+issues: "https://github.com/OsgiliathEnterprise/ansible-virtualization-guest/issues"
+
+readme: "README.md"
+license:
+  - "Apache-2.0"
+tags:
+  - "linux"
+  - "qemu"
+  - "kvm"

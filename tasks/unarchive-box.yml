@@ -1,20 +1,20 @@
 ---
-- name: ansible-virtualization-guest | unarchive-box | Check for vagrantbox files existance
+- name: Unarchive-box | make image directories
+  ansible.builtin.file:
+    state: directory
+    dest: '{{ item }}'
+    mode: "0755"
+  become: true
+  with_items:
+    - "/var/lib/libvirt/images"
+
+- name: Unarchive-box | Check for vagrantbox files existance
   ansible.builtin.stat:
     path: "/var/lib/libvirt/images/{{ virtualmachine.name }}.img"
   register: vagrantboxexists
   become: true
 
-- name: ansible-virtualization-guest | unarchive-box | make image directories
-  become: true
-  with_items:
-    - "/var/lib/libvirt/images"
-  ansible.builtin.file:
-    state: directory
-    dest: '{{ item }}'
-    mode: "0755"
-
-- name: "ansible-virtualization-guest | unarchive-box | Extract {{ virtualmachine.name }}.tar into libvirt images folder"
+- name: "Unarchive-box | Download virtual machine tar and extract the content into temporary folder {{ virtualmachine.name }}"
   ansible.builtin.unarchive:
     src: "{{ virtualmachine.url }}"
     exclude:
@@ -25,7 +25,7 @@
     creates: "{{ isos_temp_remote_directory.path }}/box.img"
   when: not vagrantboxexists.stat.exists
 
-- name: ansible-virtualization-guest | unarchive-box | Copy vagrantbox file if it does not exist
+- name: Unarchive-box | Copy box image into libvirt images folder
   ansible.builtin.copy:
     src: "{{ isos_temp_remote_directory.path }}/box.img"
     dest: "/var/lib/libvirt/images/{{ virtualmachine.name }}.img"
@@ -34,7 +34,7 @@
   when: not vagrantboxexists.stat.exists
   become: true
 
-- name: ansible-virtualization-guest | unarchive-box | Remove vagrantbox file
+- name: Unarchive-box | Remove vagrantbox file
   ansible.builtin.file:
     path: "{{ isos_temp_remote_directory.path }}/box.img"
     state: absent

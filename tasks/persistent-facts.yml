@@ -1,21 +1,21 @@
 ---
 
-- name: Collect only facts returned by facter
+- name: Persistent-facts | Collect only facts returned by facter
   ansible.builtin.setup:
     filter: "ansible_local"
 
-- name:  ansible-virtualization-guest | persistent-facts | read all local facts
+- name: Persistent-facts | read all local facts
   ansible.builtin.debug:
-    msg: "{{ ansible_local | default ('') }}"
+    msg: "{{ ansible_local | default('') }}"
 
-- name:  ansible-virtualization-guest | persistent-facts | extract
+- name: Persistent-facts | extract
   ansible.builtin.debug:
-    msg: "{{ ansible_local['ansible_virtualization_guest']['general']['configuredvm'].split(',') | default ([]) }}"
+    msg: "{{ ansible_local['ansible_virtualization_guest']['general']['configuredvm'].split(',') | default([]) }}"
   when: ansible_local | json_query('ansible_virtualization_guest.general.configuredvm') | default('Error',True) != 'Error'
   register: raw_ansible_virtualization_guest_facts_configured_vm
   become: true
 
-- name:  ansible-virtualization-guest | persistent-facts | convert
+- name: Persistent-facts | convert
   ansible.builtin.debug:
     msg: "{{ raw_ansible_virtualization_guest_facts_configured_vm.msg | default([]) }}"
   register: ansible_virtualization_guest_facts_configured_vm

@@ -1,0 +1,15 @@
+---
+roles:
+  # Install a role from Ansible Galaxy.
+  - name: tcharl.ansible_routing
+  - name: mrlesmithjr.manage-lvm
+  - name: tcharl.ansible_volumes
+  - name: tcharl.ansible_users
+  - name: tcharl.ansible_securehost
+  - name: robertdebock.users
+  - name: robertdebock.bootstrap
+  - name: robertdebock.core_dependencies
+  - name: tcharl.ansible_virtualization
+  - name: tcharl.ansible_role_libvirt_host
+  - name: stackhpc.libvirt-vm
+  - name: geerlingguy.ntp
