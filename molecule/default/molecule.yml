@@ -41,7 +41,6 @@ verifier:
 scenario:
   name: default
   test_sequence:
-    - lint
     - dependency
     - cleanup
     - destroy

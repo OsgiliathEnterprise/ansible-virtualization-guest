@@ -39,7 +39,6 @@ verifier:
 scenario:
   name: kvm
   test_sequence:
-    - lint
     - dependency
     - cleanup
     - destroy

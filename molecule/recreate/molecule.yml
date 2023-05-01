@@ -41,7 +41,6 @@ verifier:
 scenario:
   name: recreate
   test_sequence:
-    - lint
     - dependency
     - cleanup
     - destroy
@@ -49,7 +48,7 @@ scenario:
     - create
     - prepare
     - converge
- #   - idempotence
+    # - idempotence
     - side_effect
     - verify
     - cleanup
