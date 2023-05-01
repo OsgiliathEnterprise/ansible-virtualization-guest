@@ -4,7 +4,7 @@ roles:
   - name: tcharl.ansible_routing
   - name: mrlesmithjr.manage-lvm
   - name: tcharl.ansible_volumes
-  - name: tcharl.ansible_users
+  - name: tcharl.ansible_localuser
   - name: tcharl.ansible_securehost
   - name: robertdebock.users
   - name: robertdebock.bootstrap
