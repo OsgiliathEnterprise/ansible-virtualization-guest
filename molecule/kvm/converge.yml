@@ -11,7 +11,7 @@
         lvnames: []
     virtualization_guest_boxes:
       - name: fedoraGuestVM
-        url: https://app.vagrantup.com/fedora/boxes/35-cloud-base/versions/35.20211026.0/providers/libvirt.box
+        url: https://app.vagrantup.com/fedora/boxes/38-cloud-base/versions/38.20230413.1/providers/libvirt.box
         memory_mb: 2048
         vcpus: 2
         ssh_port_on_host: 6752 # same as the one in molecule.yml
@@ -40,7 +40,7 @@
         dhcp_start: 192.168.121.100
         dhcp_end: 192.168.121.200
   roles:
-    - role: ansible-virtualization-guest
+    - role: tcahrl.ansible_virtualization_guest
   tasks:
     - name: ansible-virtualization-guest | handler | execute hook # firewalld overriding vm NAT
       ansible.builtin.service:
