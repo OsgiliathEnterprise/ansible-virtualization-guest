@@ -52,7 +52,7 @@ jobs:
 #          sudo kvm-ok
       - name: tox lint
         run: |
-          cd tcharl.ansible_virtualization_guests
+          cd tcharl.ansible_virtualization_guest
           tox -e lint
   test:
     # The type of runner that the job will run on
@@ -88,7 +88,6 @@ jobs:
       - name: vagrant install packages
         run: |
           vagrant plugin install vagrant-libvirt
-          ./configure
       - name: pip install packages
         run: |
           pip3 install wheel setuptools tox
