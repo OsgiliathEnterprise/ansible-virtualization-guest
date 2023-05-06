@@ -19,9 +19,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          path: tcharl.ansible_virtualization_guest
       - name: install prereq
         run: |
+          cd tcharl.ansible_virtualization_guest
           ansible-galaxy role install -r requirements-standalone.yml
           ansible-galaxy collection install -r requirements-collections.yml
   # This workflow contains a single job called "build"
@@ -32,11 +35,13 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          path: tcharl.ansible_virtualization_guest
       - name: update apt
         run: |
           sudo apt update
-      - name: install tox apt prerequisite
+      - name: install aptitude packages
         run: |
           sudo apt -y install sudo python3 python3-pip
       - name: pip install packages
@@ -47,6 +52,7 @@ jobs:
 #          sudo kvm-ok
       - name: tox lint
         run: |
+          cd tcharl.ansible_virtualization_guests
           tox -e lint
   test:
     # The type of runner that the job will run on
@@ -55,7 +61,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          path: tcharl.ansible_virtualization_guest
       - name: add vagrant apt key
         run: |
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
@@ -68,7 +76,7 @@ jobs:
 #      - name: apt upgrade
 #        run: |
 #          sudo apt upgrade
-      - name: install libvirt apt prerequisite
+      - name: install aptitude packages
         run: |
           sudo apt -y install bridge-utils dnsmasq-base ebtables libvirt-dev qemu-kvm libvirt-daemon-system libvirt-daemon libvirt-clients qemu-utils ruby-dev ca-certificates curl gcc iproute2 sudo vagrant python3 python3-pip cpu-checker
       - name: start libvirtd
@@ -89,4 +97,5 @@ jobs:
 #          sudo kvm-ok
 #      - name: tox test
 #        run: |
+#           cd tcharl.ansible_virtualization_guest
 #          tox -e test-exec

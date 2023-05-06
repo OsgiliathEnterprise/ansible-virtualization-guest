@@ -15,7 +15,7 @@ platforms:
   - name: Fedora-Molecule-virtualization-Guest
     box: fedora/38-cloud-base
     provider_options:
-      driver: '"kvm"'
+      driver: "kvm"
       cpus: 4
       memory: 4096
     instance_raw_config_args:
