@@ -41,13 +41,6 @@
   loop_control:
     loop_var: nic
 
-- name: Vm | restart libvirtd
-  ansible.builtin.service:
-    name: libvirtd
-    state: restarted
-  changed_when: false
-  become: true
-
 - name: Vm | systemd-resolved restarter
   ansible.builtin.template:
     src: 1systemd-resolved-vm.j2

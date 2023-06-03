@@ -71,9 +71,20 @@
   failed_when: false
   become: true
 
-- name: Network | reboot libvirtd # bug in firewalld
-  ansible.builtin.service:
-    name: libvirtd
-    state: restarted
-  changed_when: false
-  become: true
+- name: Network | reference new VM in host hosts file
+  ansible.builtin.include_role:
+    name: tcharl.etchost_append
+  vars:
+    - name: "{{ virtualmachine.name }}"
+      ip: "{{ hostcheck.ipaddr }}"
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck
+  when:
+    - not currentvmnetinfo.failed
+#- name: Network | reboot libvirtd # bug in firewalld
+#  ansible.builtin.service:
+#    name: libvirtd
+#    state: restarted
+#  changed_when: false
+#  become: true

@@ -32,6 +32,13 @@
   loop_control:
     loop_var: virtualmachine
 
+- name: Vm | restart libvirtd
+  ansible.builtin.service:
+    name: libvirtd
+    state: restarted
+  changed_when: false
+  become: true
+
 - name: Post creation actions
   ansible.builtin.include_tasks: post-create.yml
 

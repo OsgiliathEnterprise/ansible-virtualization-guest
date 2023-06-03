@@ -13,7 +13,7 @@ driver:
     name: virtualbox
 platforms:
   - name: Fedora-Molecule-Virtualization-Guest-VB
-    box: fedora/38-cloud-base
+    box: ${TESTBOX:-fedora/38-cloud-base}
     provider_options:
       cpus: 8
       memory: 12288
