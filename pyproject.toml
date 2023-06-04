@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tcharl.ansible_virtualization_guest"
-version = "0.1.0"
+version = "2.0.1"
 description = "Download and start a qemu image on any kvm kypervisor"
 authors = ["Charlie Mordant <cmordant1@gmail.com>"]
 license = "Apache2"

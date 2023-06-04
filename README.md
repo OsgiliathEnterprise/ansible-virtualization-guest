@@ -14,7 +14,7 @@ Finally, it will configure firewalld on the host to let you have access to the g
 Requirements
 ------------
 
-executing `.configure` will download requirements for the role
+tox -e pipdep and check [pip requirements] (./requirements.txt) or [pip dev requirements] (./requirements-dev.txt)
 
 Role Variables
 --------------
@@ -47,8 +47,7 @@ These boxes will be unpacked in `/var/lib/libvirt/images/{{ box.name }}.img` so 
 Dependencies
 ------------
 
-* [StackHpc VM guest](https://github.com/stackhpc/ansible-role-libvirt-vm)
-
+See: [requirements collection](./requirements-collections.yml) and [requirements standalone](./requirements-standalone.yml)
 
 Example Playbook
 ----------------
