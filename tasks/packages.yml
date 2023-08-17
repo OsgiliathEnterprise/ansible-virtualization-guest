@@ -7,3 +7,4 @@
   become: true
   with_items:
     - cronie-anacron
+    - expect

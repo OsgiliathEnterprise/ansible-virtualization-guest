@@ -1,7 +1,18 @@
 ---
 
+- name: Vm | loop over Networkmanager interfaces
+  ansible.builtin.include_tasks: networkmanager-bridge.yml
+  loop: "{{ virtualmachine.interfaces | selectattr('type', 'defined') | selectattr('type', 'equalto', 'bridge') }}"
+  loop_control:
+    loop_var: nic
+
 - name: "Vm | Extract box into libvirt images folder for vm {{ virtualmachine.name }}"
   ansible.builtin.include_tasks: unarchive-box.yml
+
+- name: "Vm | Compute interface bridge name"
+  ansible.builtin.debug:
+    msg: "{{ virtualmachine.interfaces | to_json | regex_replace('\"dev\":\\s\"([a-zA-Z0-9]*)\"', '\"dev\": \"bridge-\\1\"') }}"
+  register: interfaces_and_bridges
 
 - name: Vm | run vms
   ansible.builtin.include_role:
@@ -13,8 +24,8 @@
         name: "{{ virtualmachine.name }}"
         memory_mb: "{{ virtualmachine.memory_mb }}"
         vcpus: "{{ virtualmachine.vcpus }}"
-        ssh_port_on_host: "{{ virtualmachine.ssh_port_on_host | int }}" # same as the one in molecule.yml
-        ansible_groups: "{{ virtualmachine.ansible_groups }}"
+        ssh_port_on_host: "{{ virtualmachine.ssh_port_on_host | default(22) | int }}" # same as the one in molecule.yml
+        ansible_groups: "{{ virtualmachine.ansible_groups | default(omit) }}"
         volumes:
           - name: "{{ virtualmachine.name }}.img"
             device: 'disk'
@@ -22,7 +33,7 @@
             capacity: "{{ virtualmachine.size | default(ansible_virtualization_guest_min_image_size) }}"
             format: 'qcow2'
             target: "{{ ansible_virtualization_guest_vm_image_target }}"
-        interfaces: "{{ virtualmachine.interfaces }}"
+        interfaces: "{{ interfaces_and_bridges.msg }}"
 
 - name: Vm | vm xml
   community.libvirt.virt:
@@ -33,11 +44,21 @@
 - name: Vm | Debug vminfo
   ansible.builtin.debug:
     var: vmxml
-    verbosity: 1
+    # verbosity: 1
 
-- name: Vm | loop over nics
-  ansible.builtin.include_tasks: network.yml
-  loop: "{{ virtualmachine.interfaces }}"
+- name: Vm | loop over NAT nics
+  ansible.builtin.include_tasks: network-nat.yml
+  loop: "{{ virtualmachine.interfaces | selectattr('network', 'defined') }}"
+  loop_control:
+    loop_var: nic
+  when: nic.network is defined
+
+- name: Vm | Configure VM bridge
+  ansible.builtin.include_tasks: network-bridge.yml
+  loop: "{{ virtualmachine.interfaces | selectattr('type', 'defined') | selectattr('type', 'equalto', 'bridge') }}"
+  when:
+   - nic.type is defined
+   - nic.type == 'bridge'
   loop_control:
     loop_var: nic
 

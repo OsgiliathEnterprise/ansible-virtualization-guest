@@ -21,6 +21,10 @@
           - openid
         interfaces:
           - network: default
+          #- type: bridge
+          #  source:
+          #    dev: eth1
+          #    mode: vepa
     users_group_list2:
       - name: libvirt
     systemusers_user_list:

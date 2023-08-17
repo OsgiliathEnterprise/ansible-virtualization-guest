@@ -3,59 +3,54 @@
 - name: Guest-ssh | download ssh key to connect to vm
   ansible.builtin.get_url:
     url: "{{ virtualmachine.vm_ssh_key_url | default(ansible_vagrant_key_url) }}"
-    dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}"
+    dest: "{{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}"
     owner: "{{ whoami.stdout }}"
     group: "{{ whoami.stdout }}"
     mode: '0600'
-
-- name: Guest-ssh | download download public key to connect to vm
-  ansible.builtin.get_url:
-    url: "{{ virtualmachine.vm_ssh_key_url | default(ansible_vagrant_key_url) }}.pub"
-    dest: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}.pub"
-    owner: "{{ whoami.stdout }}"
-    group: "{{ whoami.stdout }}"
-    mode: '0644'
 
 - name: Guest-ssh | ssh add current user info on remote
   ansible.builtin.shell: >
     set -o pipefail &&
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
-    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}
-    "sudo useradd {{ whoami.stdout }};sudo usermod -aG wheel {{ whoami.stdout }};sudo mkdir /home/{{ whoami.stdout }}/.ssh;echo \"{{ whoami.stdout }}     ALL=(ALL) NOPASSWD:ALL\" | (sudo EDITOR='tee -a' visudo);"
+    {{ ansible_virtualization_guest_vm_admin }}@{{ guest_ip }}
+    "sudo useradd {{ whoami.stdout }};sudo usermod -aG wheel {{ whoami.stdout }};sudo mkdir {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh;echo \"{{ whoami.stdout }}     ALL=(ALL) NOPASSWD:ALL\" | (sudo EDITOR='tee -a' visudo);"
   changed_when: false
-  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
-  loop_control:
-    loop_var: hostcheck
-  when: ansible_virtualization_guest_vm_user != whoami.stdout
+  when: ansible_virtualization_guest_vm_admin != whoami.stdout
 
 - name: Guest-ssh | ssh copy authorized key for current user
   ansible.builtin.shell: >
-    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
-    /home/{{ whoami.stdout }}/.ssh/authorized_keys
-    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}:/home/{{ ansible_virtualization_guest_vm_user }}/.ssh/authorized_keys{{ whoami.stdout }}
+    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
+    {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/authorized_keys
+    {{ ansible_virtualization_guest_vm_admin }}@{{ guest_ip }}:/{{ ansible_virtualization_guest_vm_admin }}/.ssh/authorized_keys{{ whoami.stdout }}
   changed_when: false
-  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
-  loop_control:
-    loop_var: hostcheck
+  when: ansible_virtualization_guest_vm_admin != whoami.stdout
+
+- name: Guest-ssh | set whoami user authorized keys
+  ansible.builtin.shell: >
+    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
+    {{ ansible_virtualization_guest_vm_admin }}@{{ guest_ip }}
+    "sudo mv /{{ ansible_virtualization_guest_vm_admin }}/.ssh/authorized_keys{{ whoami.stdout }} {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/authorized_keys;sudo chown -R {{ whoami.stdout }}:{{ whoami.stdout }} {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh;"
+  changed_when: false
+  when: ansible_virtualization_guest_vm_admin != whoami.stdout
+
+- name: Guest-ssh | remove remote default user
+  ansible.builtin.shell: >
+    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
+    {{ ansible_virtualization_guest_vm_admin }}@{{ guest_ip }}
+    "sudo userdel -f {{ ansible_virtualization_guest_vm_user }};"
+  changed_when: false
+  failed_when: false # default vagrant user may not exist: depends on the machine
   when: ansible_virtualization_guest_vm_user != whoami.stdout
 
-- name: Guest-ssh | update rights on remote
+- name: Guest-ssh | secure admin connection
   ansible.builtin.shell: >
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
-    {{ ansible_virtualization_guest_vm_user }}@{{ hostcheck.ipaddr }}
-    "sudo mv /home/{{ ansible_virtualization_guest_vm_user }}/.ssh/authorized_keys{{ whoami.stdout }} /home/{{ whoami.stdout }}/.ssh/authorized_keys;sudo chown -R {{ whoami.stdout }}:{{ whoami.stdout }} /home/{{ whoami.stdout }}/.ssh;sudo userdel -f {{ ansible_virtualization_guest_vm_user }};"
+    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}
+    {{ ansible_virtualization_guest_vm_admin }}@{{ guest_ip }}
+    "sudo mv -rf /{{ ansible_virtualization_guest_vm_admin }}/.ssh/authorized_keys{{ whoami.stdout }} /{{ ansible_virtualization_guest_vm_admin }}/.ssh/authorized_keys;sudo passwd -e {{ ansible_virtualization_guest_vm_admin }};"
   changed_when: false
-  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
-  loop_control:
-    loop_var: hostcheck
-  when: ansible_virtualization_guest_vm_user != whoami.stdout
+  when: ansible_virtualization_guest_vm_admin != whoami.stdout
 
 - name: Guest-ssh | remove former guest key from host
   ansible.builtin.file:
-    path: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}"
-    state: absent
-
-- name: Guest-ssh | remove former guest public key from host
-  ansible.builtin.file:
-    path: "/home/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}.pub"
+    path: "{{ ansible_virtualization_guest_current_user_home_prefix }}/{{ whoami.stdout }}/.ssh/id_rsa{{ virtualmachine.name }}"
     state: absent

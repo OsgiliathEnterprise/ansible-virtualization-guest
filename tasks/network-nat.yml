@@ -1,0 +1,113 @@
+---
+
+- name: Network_NAT | delete previous network address for VM
+  ansible.builtin.include_tasks: delete-vm-network-host.yml
+
+- name: Network_NAT | extract current vm xml
+  community.general.xml:
+    xmlstring: "{{ vmxml.get_xml }}"
+    xpath: "/domain/devices/interface[@type='{{ nic.type if nic.type is defined else \"network\" }}']/mac"  # /mac/@address
+    content: attribute
+  register: vmmacaddress
+
+- name: Network_NAT | Debug vm mac address
+  ansible.builtin.debug:
+    var: vmmacaddress
+    verbosity: 2
+
+- name: Network_NAT | wait for leases to be available for NAT network
+  community.libvirt.virt_net:
+    command: info
+    name: "{{ nic.network }}"
+  retries: 70 # travis need a loooooooong setup
+  delay: 10
+  until: fullnetnatinfo.networks[nic.network].dhcp_leases | selectattr('mac', 'equalto', vmmacaddress.matches.0.mac.address) | length > 0
+  register: fullnetnatinfo
+
+- name: Network_NAT | Debug fullnetnatinfo
+  ansible.builtin.debug:
+    var: fullnetnatinfo
+    verbosity: 2
+
+- name: Network_NAT | extract current mac netinfo
+  vars:
+    query: "[?mac == '{{ vmmacaddress.matches.0.mac.address }}']"
+  ansible.builtin.debug:
+    msg: "{{ fullnetnatinfo.networks[nic.network].dhcp_leases | json_query(query) | default(fullnetnatinfo.networks[nic.network].dhcp_leases.0.mac.address) }}"
+  register: currentvmnetinfo
+
+- name: Network_NAT | Debug currentvmnetinfo
+  ansible.builtin.debug:
+    var: currentvmnetinfo
+    verbosity: 1
+
+- name: Network_NAT | configure permanent ip
+  community.libvirt.virt_net:
+    name: "{{ nic.network }}"
+    command: modify
+    xml: "<host mac='{{ hostcheck.mac }}' name='{{ virtualmachine.name }}' ip='{{ hostcheck.ipaddr }}'/>"
+  become: true
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck
+
+- name: Network_NAT | start vm
+  community.libvirt.virt:
+    name: "{{ virtualmachine.name }}"
+    state: running
+  become: Yes
+
+- name: Network_NAT | trigger ssh role
+  ansible.builtin.include_tasks: guest-ssh.yml
+  vars:
+    - guest_ip: "{{ hostcheck.ipaddr }}"
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck
+
+- name: Network_NAT | configure port forward on host
+  ansible.builtin.include_tasks: host-port-forward.yml
+
+- name: Ansible-hosts | retrieve current machine ip
+  ansible.builtin.setup:
+    gather_subset:
+      - network
+  register: host_facts
+
+- name: Ansible-hosts | debug preferred_nic
+  ansible.builtin.debug:
+    msg: "{{ preferred_nic | default(omit) }}"
+    verbosity: 3
+
+- name: Ansible-hosts | compute ip if preferred_nic is not set
+  ansible.builtin.debug:
+    msg: "{{ host_facts.ansible_facts['ansible_' + preferred_nic | replace('-', '_')].ipv4.address if preferred_nic is defined else host_facts.ansible_facts.ansible_default_ipv4.address | default(host_facts.ansible_facts.ansible_all_ipv4_addresses | first) }}"
+  register: current_host_ip
+
+- name: Network_NAT | trigger ansible hosts role
+  ansible.builtin.include_tasks: ansible-hosts.yml
+  vars:
+    - clientid: "{{ hostcheck.clientid | default(virtualmachine.name) }}"
+    - sshport: "{{ virtualmachine.ssh_port_on_host | default(2222) }}"
+    - hostip: "{{ current_host_ip.msg }}"
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck
+
+- name: Network_NAT | reboot firewalld # bug in firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: restarted
+  failed_when: false
+  become: true
+
+- name: Network_NAT | reference new VM in host hosts file
+  ansible.builtin.include_role:
+    name: tcharl.etchost_append
+  vars:
+    - name: "{{ virtualmachine.name }}"
+      ip: "{{ hostcheck.ipaddr }}"
+      replace: true
+  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  loop_control:
+    loop_var: hostcheck

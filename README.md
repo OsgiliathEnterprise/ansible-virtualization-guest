@@ -30,7 +30,7 @@ Also, your should reference some remotely hosted libvirt compliant boxes
         memory_mb: 2048
         vcpus: 1
         recreate_machine: true # mandatory should recreate or not?
-        ssh_port_on_host: 6752 # same as the one in molecule.yml
+        ssh_port_on_host: 6752 # port configured as NATTED on the host (port 6752 on the host will be redirected to port 22 on the guest)
         vm_ssh_key_url: # URL of the key insecure packer key to download
         ansible_groups:
           - directory
@@ -38,11 +38,25 @@ Also, your should reference some remotely hosted libvirt compliant boxes
         size: 3GB # Optionnal
         interfaces:
           - network: default
+      - name: fedoraGuestVM2
+        url: https://download.fedoraproject.org/pub/fedora/linux/releases/33/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-33-1.2.x86_64.vagrant-libvirt.box
+        memory_mb: 2048
+        vcpus: 1
+        recreate_machine: true # mandatory should recreate or not?
+        vm_ssh_key_url: # URL of the key insecure packer key to download
+        size: 3GB # Optionnal
+        interfaces:
+          - type: bridge
+            source:
+              dev: eth0
+
 ``` 
 More information on the according variables in [molecule test](./molecule/default/converge.yml) and [defaults variables](./defaults/main.yml)
 
 These boxes will be unpacked in `/var/lib/libvirt/images/{{ box.name }}.img` so that you'll be able to reference it to create your vm
 
+## Known strange behaviours
+ - This role won't recreate vm that are not taggued by `recreate_machine: true` even if they are marked as undefine in virsh. It will persist the list of created VM in a persistent fact that you should edit/remove `/etc/ansible/facts.d/ansible_virtualization_guest.fact`.
 
 Dependencies
 ------------

@@ -3,7 +3,7 @@
 - name: Delete-vm-network-host | get current network xml
   community.libvirt.virt_net:
     command: get_xml
-    name: "{{ virtualmachine.interfaces.0.network }}"
+    name: "{{ nic.network }}"
   register: network_xml
   become: True
 
@@ -18,9 +18,10 @@
 - name: Delete-vm-network-host | debug current network xml
   ansible.builtin.debug:
     var: already_registered_hosts
+    verbosity: 2
 
 - name: Delete-vm-network-host | remove dhcp host configuration
-  ansible.builtin.command: "virsh net-update default delete ip-dhcp-host \"<host mac='{{ already_registered_hosts.matches.0.host.mac }}' name='{{ already_registered_hosts.matches.0.host.name }}' ip='{{ already_registered_hosts.matches.0.host.ip }}'/>\""
+  ansible.builtin.command: "virsh net-update {{ nic.network }} delete ip-dhcp-host \"<host mac='{{ already_registered_hosts.matches.0.host.mac }}' name='{{ already_registered_hosts.matches.0.host.name }}' ip='{{ already_registered_hosts.matches.0.host.ip }}'/>\""
   changed_when: false
   failed_when: false
   when:

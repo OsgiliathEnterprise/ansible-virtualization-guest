@@ -2,12 +2,13 @@
 roles:
   # Install a role from Ansible Galaxy.
   - name: tcharl.ansible_routing
-  - name: mrlesmithjr.manage-lvm
+  - name: mrlesmithjr.manage_lvm
   - name: tcharl.ansible_volumes
   - name: tcharl.ansible_localuser
   - name: tcharl.ansible_securehost
   - name: robertdebock.users
   - name: robertdebock.bootstrap
+  - name: robertdebock.epel
   - name: robertdebock.core_dependencies
   - name: tcharl.ansible_virtualization
   - name: tcharl.ansible_role_libvirt_host

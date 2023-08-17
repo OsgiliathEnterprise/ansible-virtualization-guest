@@ -7,11 +7,14 @@
 ansible_virtualization_guest_network_host_zone: public
 ansible_virtualization_guest_network_default_nic: virbr0
 ansible_virtualization_guest_network_host_ipversion: ipv4
+ansible_virtualization_guest_vm_admin: root
+ansible_virtualization_guest_ssh_port: 22
+ansible_virtualization_guest_current_user_home_prefix: /home
 ansible_virtualization_guest_vm_user: vagrant
 ansible_virtualization_guest_service_name: libvirt
 ansible_virtualization_guest_service_name_tls: libvirt-tls
 ansible_sysctl_config_path: /etc/sysctl.d/
-ansible_vagrant_key_url: https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant
+ansible_vagrant_key_url: https://raw.githubusercontent.com/hashicorp/vagrant/main/keys/vagrant.key.rsa
 ansible_virtualization_guest_min_image_size: "3GB"
 ansible_virtualization_guest_vm_image_target: "hda"
 #above should be the same as ansible_libvirt_vm
