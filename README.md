@@ -11,6 +11,8 @@ The cool thing with this role is that you can grab any box you want from vagrant
 It will copy its ssh key and add it to sudoers/nologin.
 Finally, it will configure firewalld on the host to let you have access to the guest machine
 
+It also supports Bridged and Natted interfaces
+
 Requirements
 ------------
 
@@ -55,7 +57,7 @@ More information on the according variables in [molecule test](./molecule/defaul
 
 These boxes will be unpacked in `/var/lib/libvirt/images/{{ box.name }}.img` so that you'll be able to reference it to create your vm
 
-## Known strange behaviours
+## Known surprising behaviours
  - This role won't recreate vm that are not taggued by `recreate_machine: true` even if they are marked as undefine in virsh. It will persist the list of created VM in a persistent fact that you should edit/remove `/etc/ansible/facts.d/ansible_virtualization_guest.fact`.
 
 Dependencies
