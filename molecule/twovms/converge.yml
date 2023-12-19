@@ -28,7 +28,7 @@
         groups: wheel
     virtualization_guest_boxes:
       - name: fedoraKubeMasterVM
-        url: https://app.vagrantup.com/fedora/boxes/38-cloud-base/versions/38.20230413.1/providers/libvirt.box
+        url: https://app.vagrantup.com/fedora/boxes/39-cloud-base/versions/39.20231031.1/providers/libvirt/amd64/vagrant.box
         memory_mb: 2048
         vcpus: 1
         recreate_machine: False
@@ -38,7 +38,7 @@
         interfaces:
           - network: default
       - name: fedoraKubeNodeVM
-        url: https://app.vagrantup.com/fedora/boxes/38-cloud-base/versions/38.20230413.1/providers/libvirt.box
+        url: https://app.vagrantup.com/fedora/boxes/39-cloud-base/versions/39.20231031.1/providers/libvirt/amd64/vagrant.box
         memory_mb: 2048
         vcpus: 1
         recreate_machine: True

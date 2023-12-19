@@ -11,11 +11,13 @@
 - name: Persistent-facts | extract
   ansible.builtin.debug:
     msg: "{{ ansible_local['ansible_virtualization_guest']['general']['configuredvm'].split(',') | default([]) }}"
-  when: ansible_local | json_query('ansible_virtualization_guest.general.configuredvm') | default('Error',True) != 'Error'
+  when: ansible_local | default('') | json_query('ansible_virtualization_guest.general.configuredvm') | default('Error',True) != 'Error'
   register: raw_ansible_virtualization_guest_facts_configured_vm
+  failed_when: false
   become: true
 
 - name: Persistent-facts | convert
   ansible.builtin.debug:
     msg: "{{ raw_ansible_virtualization_guest_facts_configured_vm.msg | default([]) }}"
+  failed_when: false
   register: ansible_virtualization_guest_facts_configured_vm

@@ -10,7 +10,7 @@
         create: true
     virtualization_guest_boxes:
       - name: fedoraGuestVM
-        url: https://app.vagrantup.com/fedora/boxes/38-cloud-base/versions/38.20230413.1/providers/libvirt.box
+        url: https://app.vagrantup.com/fedora/boxes/39-cloud-base/versions/39.20231031.1/providers/libvirt/amd64/vagrant.box
         memory_mb: 2048
         vcpus: 1
         ssh_port_on_host: 6752 # same as the one in molecule.yml
