@@ -26,6 +26,7 @@
         vcpus: "{{ virtualmachine.vcpus }}"
         ssh_port_on_host: "{{ virtualmachine.ssh_port_on_host | default(22) | int }}" # same as the one in molecule.yml
         ansible_groups: "{{ virtualmachine.ansible_groups | default(omit) }}"
+        enable_guest_virtio: True
         volumes:
           - name: "{{ virtualmachine.name }}.img"
             device: 'disk'
