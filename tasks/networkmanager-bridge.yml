@@ -105,7 +105,12 @@
   changed_when: false
   become: true
 
-#- name: NetworkManager_BRIDGE | Start port
-#  ansible.builtin.command: "nmcli connection up port-{{ nic.source.dev }}"
-#  changed_when: false
-#  become: true
+- name: NetworkManager_BRIDGE | Set priority for port
+  ansible.builtin.command: "nmcli connection modify port-{{ nic.source.dev }} connection.autoconnect-priority -1"
+  changed_when: false
+  become: true
+
+- name: NetworkManager_BRIDGE | Set priority for bridge
+  ansible.builtin.command: "nmcli connection modify bridge-{{ nic.source.dev }} connection.autoconnect-priority -1"
+  changed_when: false
+  become: true
