@@ -1,45 +1,45 @@
 ---
 
-- name: Network_BRIDGE | start vm
+- name: Network BRIDGE | start vm
   community.libvirt.virt:
     name: "{{ virtualmachine.name }}"
     state: running
   become: Yes
 
-- name: Network_BRIDGE | extract current vm xml
+- name: Network BRIDGE | extract current vm xml
   community.general.xml:
     xmlstring: "{{ vmxml.get_xml }}"
     xpath: "/domain/devices/interface[@type='{{ nic.type if nic.type is defined else \"network\" }}']/mac"  # /mac/@address
     content: attribute
   register: vmmacaddress
 
-- name: Network_BRIDGE | Debug vm mac address
+- name: Network BRIDGE | Debug vm mac address
   ansible.builtin.debug:
     var: vmmacaddress
-    #verbosity: 2
+    # verbosity: 2
 
-- name: Network_BRIDGE | retrieve current machine ip
+- name: Network BRIDGE | retrieve current machine ip
   ansible.builtin.setup:
     gather_subset:
       - network
   register: host_facts
 
-- name: Network_BRIDGE | debug preferred_nic
+- name: Network BRIDGE | debug preferred_nic
   ansible.builtin.debug:
     msg: "{{ preferred_nic | default(omit) }}"
     verbosity: 3
 
-- name: Network_BRIDGE | compute ip if preferred_nic is not set
+- name: Network BRIDGE | compute ip if preferred_nic is not set
   ansible.builtin.debug:
     msg: "{{ host_facts.ansible_facts['ansible_' + preferred_nic | replace('-', '_')].ipv4.address if preferred_nic is defined else host_facts.ansible_facts.ansible_default_ipv4.address | default(host_facts.ansible_facts.ansible_all_ipv4_addresses | first) }}"
   register: current_host_ip
 
-- name: Network_BRIDGE | compute subnet ip range
+- name: Network BRIDGE | compute subnet ip range
   ansible.builtin.debug:
     msg: "{{ current_host_ip.msg | ansible.utils.ipaddr | ansible.utils.ipsubnet(24) | ansible.utils.nthhost(1) | ansible.utils.ipsubnet(24) }}"
   register: vm_range
 
-- name: Network_BRIDGE | scan network for new VM
+- name: Network BRIDGE | scan network for new VM
   ansible.builtin.shell: |
     set -o pipefail &&
     nmap -sP {{ vm_range.msg }} | grep '{{ vmmacaddress.matches.0.mac.address | upper }}' -B3 | grep -oEi '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
@@ -50,31 +50,31 @@
   until: subnetmachines.stdout is defined and (subnetmachines.stdout | length) > 0
   become: true
 
-- name: Network_BRIDGE | debug subnet machines
+- name: Network BRIDGE | debug subnet machines
   ansible.builtin.debug:
       msg: "{{ subnetmachines.stdout | default(omit) }}"
       # verbosity: 1
 
-- name: Network_BRIDGE | trigger ssh role
+- name: Network BRIDGE | trigger ssh role
   ansible.builtin.include_tasks: guest-ssh.yml
   vars:
     - guest_ip: "{{ subnetmachines.stdout }}"
 
-- name: Network_BRIDGE | trigger ansible hosts role
+- name: Network BRIDGE | trigger ansible hosts role
   ansible.builtin.include_tasks: ansible-hosts.yml
   vars:
     - clientid: "{{ virtualmachine.name }}"
     - sshport: "{{ ansible_virtualization_guest_ssh_port }}"
     - hostip: "{{ subnetmachines.stdout }}"
 
-- name: Network_BRIDGE | reboot firewalld # bug in firewalld
+- name: Network BRIDGE | reboot firewalld # bug in firewalld
   ansible.builtin.service:
     name: firewalld
     state: restarted
   failed_when: false
   become: true
 
-- name: Network_BRIDGE | reference new VM in host hosts file
+- name: Network BRIDGE | reference new VM in host hosts file
   ansible.builtin.include_role:
     name: tcharl.etchost_append
   vars:

@@ -1,33 +1,33 @@
 ---
 
-#- name: Network_BRIDGE | retrieve current machine ip
+# - name: Network_BRIDGE | retrieve current machine ip
 #  ansible.builtin.setup:
 #    gather_subset:
 #      - network
 #  register: host_facts
 
 
-#- name: Network_BRIDGE | debug preferred_nic
+# - name: Network_BRIDGE | debug preferred_nic
 #  ansible.builtin.debug:
 #    msg: "{{ preferred_nic | default(omit) }}"
 #    verbosity: 3
 
-#- name: Network_BRIDGE | compute ip if preferred_nic is not set
+# - name: Network_BRIDGE | compute ip if preferred_nic is not set
 #  ansible.builtin.debug:
 #    msg: "{{ host_facts.ansible_facts['ansible_' + preferred_nic].ipv4.address if preferred_nic is defined else host_facts.ansible_facts.ansible_default_ipv4.address | default(host_facts.ansible_facts.ansible_all_ipv4_addresses | first) }}"
 #  register: current_host_ip
 
-#- name: Network_BRIDGE | compute ip range to set for bridge
+# - name: Network_BRIDGE | compute ip range to set for bridge
 #  ansible.builtin.debug:
 #    msg: "{{ current_host_ip.msg | ansible.utils.ipaddr | ansible.netcommon.ipmath(+20) | ansible.utils.ipsubnet(28) }}" # TODO: make this configurable, use + instead minus
 #  register: vm_range
 
-#- name: Network_BRIDGE | debug vm ip range
+# - name: Network_BRIDGE | debug vm ip range
 #  ansible.builtin.debug:
 #    msg: "{{ vm_range.msg | default(omit) }}"
 #    verbosity: 1
 
-#- name: Network_BRIDGE | compute ip range to set for bridge
+# - name: Network_BRIDGE | compute ip range to set for bridge
 #  ansible.builtin.debug:
 #    msg: "{{ gw_host if gw_host is defined else (current_host_ip.msg | ansible.utils.ipaddr | ansible.utils.ipsubnet(24) | ansible.utils.nthhost(1)) }}"
 #  register: gw_addr
@@ -40,12 +40,12 @@
   community.general.nmcli:
     type: bridge
     conn_name: "bridge-{{ nic.source.dev }}"
-    #gw4: "{{ gw_addr.msg }}"
-    #ip4:
+    # gw4: "{{ gw_addr.msg }}"
+    # ip4:
     # - "{{ vm_range.msg }}"
     # - "{{ current_host_ip.msg }}"
     method4: "auto"
-    #method4: "manual"
+    # method4: "manual"
     method6: disabled
     state: present
     # autoconnect: true
@@ -114,4 +114,3 @@
           - "port-{{ nic.source.dev }}"
           - "bridge-{{ nic.source.dev }}"
         masquerade: true
-

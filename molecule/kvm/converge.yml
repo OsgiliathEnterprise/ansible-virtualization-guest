@@ -21,7 +21,7 @@
           - openid
         interfaces:
           - network: default
-          #- type: bridge
+          # - type: bridge
           #  source:
           #    dev: eth1
           #    mode: vepa

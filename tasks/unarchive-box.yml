@@ -30,7 +30,7 @@
     src: "{{ isos_temp_remote_directory.path }}/box.img"
     dest: "/var/lib/libvirt/images/{{ virtualmachine.name }}.img"
     remote_src: yes
-    mode: 0640
+    mode: "0640"
   when: not vagrantboxexists.stat.exists
   become: true
 

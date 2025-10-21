@@ -1,5 +1,7 @@
 exclude_paths:
  - .cache/
+ - .github/
+ - .poetry/
  - .tox/
  - meta/
  - molecule/
@@ -8,3 +10,5 @@ warn_list:
    - 'schema[tasks]'
 skip_list:
    - '106'
+   - 'var-naming'
+   - 'schema'
