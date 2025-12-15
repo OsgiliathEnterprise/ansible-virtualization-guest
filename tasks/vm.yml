@@ -16,7 +16,7 @@
 
 - name: Vm | run vms
   ansible.builtin.include_role:
-    name: stackhpc.libvirt-vm
+    name: tcharl.ansible_libvirt_vm
   vars:
     ansible_become: yes
     libvirt_vms:
@@ -34,7 +34,7 @@
             capacity: "{{ virtualmachine.size | default(ansible_virtualization_guest_min_image_size) }}"
             format: 'qcow2'
             target: "{{ ansible_virtualization_guest_vm_image_target }}"
-        interfaces: "{{ interfaces_and_bridges.msg }}"
+        interfaces: "{{ interfaces_and_bridges.msg | from_json }}"
 
 - name: Vm | vm xml
   community.libvirt.virt:
@@ -57,11 +57,11 @@
 - name: Vm | Configure VM bridge
   ansible.builtin.include_tasks: network-bridge.yml
   loop: "{{ virtualmachine.interfaces | selectattr('type', 'defined') | selectattr('type', 'equalto', 'bridge') }}"
+  loop_control:
+    loop_var: nic
   when:
    - nic.type is defined
    - nic.type == 'bridge'
-  loop_control:
-    loop_var: nic
 
 - name: Vm | systemd-resolved restarter
   ansible.builtin.template:

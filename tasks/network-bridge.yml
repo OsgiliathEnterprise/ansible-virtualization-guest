@@ -52,20 +52,20 @@
 
 - name: Network BRIDGE | debug subnet machines
   ansible.builtin.debug:
-      msg: "{{ subnetmachines.stdout | default(omit) }}"
+    msg: "{{ subnetmachines.stdout | default(omit) }}"
       # verbosity: 1
 
 - name: Network BRIDGE | trigger ssh role
   ansible.builtin.include_tasks: guest-ssh.yml
   vars:
-    - guest_ip: "{{ subnetmachines.stdout }}"
+   guestip: "{{ subnetmachines.stdout }}"
 
 - name: Network BRIDGE | trigger ansible hosts role
   ansible.builtin.include_tasks: ansible-hosts.yml
   vars:
-    - clientid: "{{ virtualmachine.name }}"
-    - sshport: "{{ ansible_virtualization_guest_ssh_port }}"
-    - hostip: "{{ subnetmachines.stdout }}"
+   clientid: "{{ virtualmachine.name }}"
+   sshport: "{{ ansible_virtualization_guest_ssh_port }}"
+   hostip: "{{ subnetmachines.stdout }}"
 
 - name: Network BRIDGE | reboot firewalld # bug in firewalld
   ansible.builtin.service:
@@ -78,6 +78,6 @@
   ansible.builtin.include_role:
     name: tcharl.etchost_append
   vars:
-    - name: "{{ virtualmachine.name }}"
-      ip: "{{ subnetmachines.stdout }}"
-      replace: true
+   name: "{{ virtualmachine.name }}"
+   ip: "{{ subnetmachines.stdout }}"
+   replace: true

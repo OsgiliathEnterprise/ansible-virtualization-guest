@@ -5,5 +5,5 @@ roles:
   - name: robertdebock.bootstrap
   - name: robertdebock.epel
   - name: robertdebock.core_dependencies
-  - name: stackhpc.libvirt-vm
+  - name: tcharl.ansible_libvirt_vm
   - name: geerlingguy.ntp

@@ -27,7 +27,7 @@
 
 - name: Delete vm | run vms
   ansible.builtin.include_role:
-    name: stackhpc.libvirt-vm
+    name: tcharl.ansible_libvirt_vm
   vars:
     ansible_become: yes
     libvirt_vms:
