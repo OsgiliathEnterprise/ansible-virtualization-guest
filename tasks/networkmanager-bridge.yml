@@ -36,6 +36,15 @@
   ansible.builtin.debug:
     msg: "{{ gw_addr.msg | default(omit) }}"
 
+# See https://github.com/firewalld/firewalld/issues/1236
+- name: Network_BRIDGE | Set firewalld to rely on iptables
+  ansible.builtin.replace:
+    path: /etc/firewalld/firewalld.conf
+    regexp: 'FirewallBackend=nftables'
+    replace: 'FirewallBackend=iptables'
+  become: True
+
+
 - name: NetworkManager_BRIDGE | Create master bridge
   community.general.nmcli:
     type: bridge
