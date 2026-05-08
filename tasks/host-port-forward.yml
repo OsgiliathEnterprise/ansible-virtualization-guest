@@ -13,7 +13,7 @@
   vars:
     firewalld_zones:
       - name: "{{ ansible_virtualization_guest_network_host_zone }}"
-        masquerade: true
+        masquerade: false
         nics: "{{ bridgename.msg | default(ansible_virtualization_guest_network_default_nic) }}"
         port_forward_rules:
           - port_forward_rule: "ssh-to-guest-{{ virtualmachine.name }}-tcp"

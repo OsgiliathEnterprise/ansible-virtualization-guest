@@ -44,7 +44,6 @@
     replace: 'FirewallBackend=iptables'
   become: True
 
-
 - name: NetworkManager_BRIDGE | Create master bridge
   community.general.nmcli:
     type: bridge
@@ -113,6 +112,7 @@
   changed_when: false
   become: true
 
+# Masquerade mess up with bgp routing on the bridge: disabling it
 - name: NetworkManager_BRIDGE | configure firewalld to accept bridge
   ansible.builtin.include_role:
     name: tcharl.ansible_routing
@@ -122,4 +122,4 @@
         nics:
           - "port-{{ nic.source.dev }}"
           - "bridge-{{ nic.source.dev }}"
-        masquerade: true
+        masquerade: false
