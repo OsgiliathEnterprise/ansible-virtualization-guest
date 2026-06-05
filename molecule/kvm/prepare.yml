@@ -6,8 +6,12 @@
     - all
   tasks:
     - name: "Cat"
-      ansible.builtin.raw: df -h
+      ansible.builtin.command:
+        cmd: df -h
       changed_when: false
+      register: df_output
       become: true
+    - ansible.builtin.debug:
+        msg: "{{ df_output.stdout }}"
 
 
