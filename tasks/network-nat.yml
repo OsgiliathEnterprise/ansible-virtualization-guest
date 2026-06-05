@@ -107,9 +107,9 @@
     name: tcharl.etchost_append
   vars:
     hosts_entries:
-      name: "{{ virtualmachine.name }}"
-      ip: "{{ hostcheck.ipaddr }}"
-      replace: true
+      - name: "{{ virtualmachine.name }}"
+        ip: "{{ hostcheck.ipaddr }}"
+        replace: true
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
