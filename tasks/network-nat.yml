@@ -60,7 +60,7 @@
 - name: Network NAT | trigger ssh role
   ansible.builtin.include_tasks: guest-ssh.yml
   vars:
-    - guest_ip: "{{ hostcheck.ipaddr }}"
+    guest_ip: "{{ hostcheck.ipaddr }}"
   # default here should be the referenced interface
   loop: "{{ currentvmnetinfo.msg }}"
   loop_control:
