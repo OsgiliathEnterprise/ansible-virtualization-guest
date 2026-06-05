@@ -6,7 +6,7 @@
     - all
   tasks:
     - name: "Cat"
-      ansible.builtin.raw: df -f
+      ansible.builtin.raw: df -h
       changed_when: false
       become: true
 
