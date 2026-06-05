@@ -61,7 +61,8 @@
   ansible.builtin.include_tasks: guest-ssh.yml
   vars:
     - guest_ip: "{{ hostcheck.ipaddr }}"
-  loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
+  # default here should be the referenced interface
+  loop: "{{ currentvmnetinfo.msg }}"
   loop_control:
     loop_var: hostcheck
 
