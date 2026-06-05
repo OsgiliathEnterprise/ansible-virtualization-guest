@@ -34,7 +34,7 @@
             capacity: "{{ virtualmachine.size | default(ansible_virtualization_guest_min_image_size) }}"
             format: 'qcow2'
             target: "{{ ansible_virtualization_guest_vm_image_target }}"
-        interfaces: "{{ interfaces_and_bridges.msg | from_json }}"
+        interfaces: "{{ interfaces_and_bridges.msg if (interfaces_and_bridges.msg | type_debug == 'list') else (interfaces_and_bridges.msg | from_json) }}"
 
 - name: Vm | vm xml
   community.libvirt.virt:
