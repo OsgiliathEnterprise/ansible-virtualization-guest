@@ -25,6 +25,7 @@ provisioner:
   name: ansible
   env:
     ANSIBLE_COLLECTIONS_PATH: "${MOLECULE_PROJECT_DIRECTORY}/../community-collections:${HOME}/.ansible/collections:/usr/share/ansible/collections"
+    ANSIBLE_LOCAL_TMP: /home/tmp
   options:
     vvv: True
   config_options:
