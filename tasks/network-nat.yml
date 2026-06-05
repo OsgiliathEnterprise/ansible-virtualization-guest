@@ -106,9 +106,10 @@
   ansible.builtin.include_role:
     name: tcharl.etchost_append
   vars:
-    name: "{{ virtualmachine.name }}"
-    ip: "{{ hostcheck.ipaddr }}"
-    replace: true
+    hosts_entries:
+      name: "{{ virtualmachine.name }}"
+      ip: "{{ hostcheck.ipaddr }}"
+      replace: true
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
