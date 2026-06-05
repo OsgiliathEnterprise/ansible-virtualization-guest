@@ -32,7 +32,8 @@ install:
   - vagrant plugin install vagrant-libvirt
   - pip install wheel pyopenssl tox
   - sudo chmod o+rwx /var/run/libvirt/libvirt-sock
-
+  - sudo mkdir -p /home/tmp
+  - sudo chown -R $(whoami):$(id -gn) /home/tmp
 script:
   - mv ../ansible-virtualization-guest ../tcharl.ansible_virtualization_guest
   - travis_wait 60 tox -e test-exec -- --scenario-name kvm
