@@ -14,7 +14,7 @@
 
 # - name: Network_BRIDGE | compute ip if preferred_nic is not set
 #  ansible.builtin.debug:
-#    msg: "{{ host_facts.ansible_facts['ansible_' + preferred_nic].ipv4.address if preferred_nic is defined else host_facts.ansible_facts.ansible_default_ipv4.address | default(host_facts.ansible_facts.ansible_all_ipv4_addresses | first) }}"
+#    msg: "{{ host_facts.ansible_facts['ansible_' + preferred_nic].ipv4.0.address if preferred_nic is defined else host_facts.ansible_facts.ansible_default_ipv4.address | default(host_facts.ansible_facts.ansible_all_ipv4_addresses | first) }}"
 #  register: current_host_ip
 
 # - name: Network_BRIDGE | compute ip range to set for bridge
@@ -109,6 +109,11 @@
 
 - name: NetworkManager_BRIDGE | Set priority for bridge
   ansible.builtin.command: "nmcli connection modify bridge-{{ nic.source.dev }} connection.autoconnect-priority -1"
+  changed_when: false
+  become: true
+
+- name: NetworkManager_BRIDGE | Set promic mode
+  ansible.builtin.command: "ip link set bridge-{{ nic.source.dev }} promisc on"
   changed_when: false
   become: true
 

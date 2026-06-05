@@ -9,6 +9,7 @@ roles:
   - name: robertdebock.users
   - name: robertdebock.bootstrap
   - name: robertdebock.epel
+    version: 4.1.6
   - name: robertdebock.core_dependencies
   - name: tcharl.ansible_virtualization
   - name: tcharl.ansible_role_libvirt_host
