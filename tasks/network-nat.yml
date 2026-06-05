@@ -88,9 +88,9 @@
 - name: Network NAT | trigger ansible hosts role
   ansible.builtin.include_tasks: ansible-hosts.yml
   vars:
-    - clientid: "{{ hostcheck.clientid | default(virtualmachine.name) }}"
-    - sshport: "{{ virtualmachine.ssh_port_on_host | default(2222) }}"
-    - hostip: "{{ current_host_ip.msg }}"
+    clientid: "{{ hostcheck.clientid | default(virtualmachine.name) }}"
+    sshport: "{{ virtualmachine.ssh_port_on_host | default(2222) }}"
+    hostip: "{{ current_host_ip.msg }}"
   loop: "{{ currentvmnetinfo.msg }}" # default here should be the referenced interface
   loop_control:
     loop_var: hostcheck
