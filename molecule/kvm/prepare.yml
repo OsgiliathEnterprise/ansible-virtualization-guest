@@ -1,0 +1,13 @@
+---
+# TODO This phase fails once
+
+- name: Report machine
+  hosts:
+    - all
+  tasks:
+    - name: "Cat"
+      ansible.builtin.raw: df -f
+      changed_when: false
+      become: true
+
+
