@@ -33,7 +33,7 @@ install:
   - pip install wheel pyopenssl tox
   - sudo chmod o+rwx /var/run/libvirt/libvirt-sock
   - sudo mkdir -p /home/tmp
-  - sudo cmod 1777 /home/tmp
+  - sudo chmod 1777 /home/tmp
   - sudo chown -R $(whoami): /home/tmp
 script:
   - mv ../ansible-virtualization-guest ../tcharl.ansible_virtualization_guest
