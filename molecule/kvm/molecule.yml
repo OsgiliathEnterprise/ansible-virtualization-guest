@@ -29,7 +29,7 @@ provisioner:
     vvv: True
   config_options:
     defaults:
-      remote_tmp: /tmp
+      remote_tmp: /home/tmp
       forks: 20
     ssh_connection:
       pipelining: true
